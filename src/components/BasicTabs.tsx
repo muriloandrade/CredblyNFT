@@ -49,6 +49,7 @@ export default function BasicTabs() {
   const { accounts, setSelectedAccount } = useContext(AccountsContext);
 
   const handleChange = (event: React.SyntheticEvent, newValue: number) => {
+    event.preventDefault();
     if (accounts && setSelectedAccount) {
       switch (newValue) {
         case 0:

@@ -1,5 +1,4 @@
 import { Container } from '@mui/material';
-import React, { useState } from 'react';
 import CredblyAppBar from "./components/CredblyAppBar";
 import BasicTabs from "./components/BasicTabs";
 import "./styles/Home.css";

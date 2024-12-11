@@ -1,4 +1,3 @@
-import { useEffect, useState } from 'react';
 import NftCard, { NftType } from './NftCard';
 import { Grid2 } from '@mui/material';
 
