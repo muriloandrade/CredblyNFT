@@ -1,0 +1,13 @@
+{
+    "name": "Nike AeroFlow",
+    "description": "A cutting-edge running sneaker designed for ultimate speed and comfort. Features a sleek aerodynamic shape, a silver and neon green color scheme, and a futuristic sole with visible air cushioning.",
+    "image": "https://raw.githubusercontent.com/muriloandrade/CredblyNFT/refs/heads/master/public/NFTs/Nike/aeroflow.jpeg",
+    "type": "image/jpeg",
+    "files": [
+        {
+            "uri": "https://raw.githubusercontent.com/muriloandrade/CredblyNFT/refs/heads/master/public/NFTs/Nike/aeroflow.jpeg",
+            "is_default_file": true,
+            "type": "image/jpeg"
+        }
+    ]
+}
