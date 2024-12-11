@@ -88,7 +88,7 @@ export default function NftCard(props: NftRowProps) {
   return (
     <Grid
       item xs={12} sm={6} md={4} lg={3}
-      key={`${nft.seller}_${nft.serialNumber}`}
+      key={`${nft.addr}_${nft.serialNumber}`}
       sx={{ height: 434 }}
     >
       {/* NFT body */}
