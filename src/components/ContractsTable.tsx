@@ -1,11 +1,18 @@
-import { Button, CircularProgress, Paper, Skeleton, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Tooltip, Typography } from '@mui/material';
+import { Button, CircularProgress, Link, Paper, Skeleton, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Tooltip, Typography } from '@mui/material';
 import { ethers } from 'ethers';
 import { useCallback, useEffect, useState, useContext, useMemo } from 'react';
-import { copyToClipboard } from '../utils/general';
-import { ContractId, ContractInfoQuery, ContractInfo } from "@hashgraph/sdk";
+import { copyToClipboard, logError, logTransactionLink } from '../utils/general';
+import { ContractId, ContractInfoQuery, ContractInfo, ContractExecuteTransaction, ContractFunctionParameters, Hbar } from "@hashgraph/sdk";
 import { AccountsContext } from '../context/accountsProvider';
-import { Contract } from '../pages/Manufacturer_Steps/Step1_Create';
 import { getAndSetClientContractCreatedEvents } from '../utils/hedera';
+import toast from 'react-hot-toast';
+
+type Contract = {
+  address: string;
+  name: string;
+  uri: string;
+  balance?: Hbar;
+}
 
 interface ContractsTableProps {
   flagCreated: number;
@@ -19,7 +26,7 @@ export default function ContractsTable(props: ContractsTableProps) {
   const [rows, setRows] = useState<Contract[]>();
   const [createdEvents, setCreatedEvents] = useState<ethers.Event[] | null>(null);
 
-  const { selectedAccount, client } = useContext(AccountsContext);
+  const { selectedAccount, client, updateBalances: updateAccountsBalances } = useContext(AccountsContext);
   const address = selectedAccount?.address;
 
   // Loads contracts creation events when account or flag changes
@@ -36,7 +43,7 @@ export default function ContractsTable(props: ContractsTableProps) {
       _rows?.map((row, index) => {
         const balance = result[index].balance;
         if (balance != undefined)
-          __rows.push({ ...row, balance: String(balance) })
+          __rows.push({ ...row, balance: balance })
       })
       __rows.length > 0 && setRows(__rows);
     });
@@ -44,7 +51,7 @@ export default function ContractsTable(props: ContractsTableProps) {
 
   // Memoize filtered events to avoid re-computation
   const filteredEvents = useMemo(() => {
-    return createdEvents?.filter(event => 
+    return createdEvents?.filter(event =>
       event.args && event.args[0].toUpperCase() === address?.toUpperCase()
     );
   }, [createdEvents, address]);
@@ -76,14 +83,43 @@ export default function ContractsTable(props: ContractsTableProps) {
   }, [rows])
 
 
+  async function withdrawBalance(balance: Hbar, address: string) {
+    console.log(balance.toTinybars().toNumber())
+    setIsLoading(true);
+    try {
+      //Create contract transaction
+      const params = new ContractFunctionParameters().addAddress(selectedAccount!.address!).addUint256(balance.toTinybars().toNumber());
+      const transaction = new ContractExecuteTransaction()
+        .setContractId(ContractId.fromEvmAddress(0, 0, address))
+        .setGas(15_000_000)
+        .setFunction('withdraw', params)
+
+      //Sign with the client operator private key to pay for the transaction and submit the query to a Hedera network
+      const txResponse = client && await transaction.execute(client);
+      logTransactionLink('withdraw', txResponse!.transactionId!);
+
+      //Request the receipt of the transaction
+      const receipt = client && txResponse && await txResponse.getReceipt(client);
+      console.log(`Successfully withdrawn from ${address}.`, receipt);
+      toast.success("Successfully withdrawn");
+
+    } catch (error) {
+      logError(error);
+    } finally {
+      setIsLoading(false);
+      updateAccountsBalances!();
+      updateBalance();
+    }
+  }
+
   return (
     <TableContainer component={Paper} sx={{ width: '100%' }}>
       <Table>
         <TableHead>
           <TableRow>
-            <TableCell align="left" sx={{color: "gray"}}>Name</TableCell>
-            <TableCell align="center" sx={{color: "gray"}}>Address</TableCell>
-            <TableCell align="right" sx={{color: "gray"}}>Balance (wei)</TableCell>
+            <TableCell align="left" sx={{ color: "gray" }}>Name</TableCell>
+            <TableCell align="center" sx={{ color: "gray" }}>Address</TableCell>
+            <TableCell align="right" sx={{ color: "gray" }}>Balance (wei)</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
@@ -99,7 +135,25 @@ export default function ContractsTable(props: ContractsTableProps) {
           {!isLoading && rows && rows.length == 0 ? <TableRow><TableCell colSpan={4} ><Typography color={'grey'}>No contracts for {selectedAccount?.name} account</Typography></TableCell></TableRow> : rows?.map((row) => <TableRow key={row.address} >
             <TableCell align="left"><Tooltip title={row.uri}><Typography color="gray">{row.name}</Typography></Tooltip></TableCell>
             <TableCell align="center"><Tooltip title="click to copy"><Button variant="text" sx={{ typography: 'body1', fontFamily: 'monospace' }} onClick={() => copyToClipboard(row.address)}>{row.address}</Button></Tooltip></TableCell>
-            <TableCell align="right" width={200}><Typography color="gray">{row.balance ? row.balance : <CircularProgress size="1.5rem" color="inherit" />}</Typography></TableCell>
+            <TableCell align="right" width={200} >
+
+              {row.balance && !isLoading ? (
+
+                row.balance.toBigNumber().toNumber() > 0 ? (
+                <Tooltip title="Withdraw" followCursor >
+                  <Link href="#" onClick={() => withdrawBalance(row!.balance!, row.address)} sx={{ textDecoration: 'none' }} >
+                    <Typography color="gray">{row.balance.toString()}</Typography>
+                  </Link>
+                </Tooltip>
+
+                ) : (
+                    <Typography color="gray">{row.balance.toString()}</Typography>
+                )
+              ) : (
+                <Typography color="gray">{<CircularProgress size="1.5rem" color="inherit" />}</Typography>
+              )}
+
+            </TableCell>
           </TableRow>)}
         </TableBody>
       </Table>

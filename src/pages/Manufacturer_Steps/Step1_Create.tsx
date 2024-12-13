@@ -10,12 +10,6 @@ import { AccountsContext } from "../../context/accountsProvider";
 import ContractsTable from "../../components/ContractsTable";
 import { logError, logTransactionLink } from "../../utils/general";
 
-export type Contract = {
-  address: string;
-  name: string;
-  uri: string;
-  balance?: string;
-}
 
 export default function Step1_CreateContract() {
 

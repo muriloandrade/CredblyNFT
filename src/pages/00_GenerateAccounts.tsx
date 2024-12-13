@@ -40,7 +40,7 @@ export default function GenerateAccounts() {
 
         {/* Introduction text */}
         <Typography variant="body2" color="textSecondary" align="center">
-          Initially, it'll be created four Hedera accounts (Brand_A, Brand_B, Retailer and Customer), with a total expenditure of 280 ℏ, to simulate interactions with the network and the smart contracts. 
+          Initially, four Hedera accounts will be created (Brand_A, Brand_B, Retailer and Customer), with a total expenditure of <span style={{ fontWeight: 'bold' }}>280ℏ</span>, to simulate interactions with the network and the smart contracts. 
         </Typography>
 
         <Typography variant="body2" color="textSecondary" align="center">
@@ -48,7 +48,7 @@ export default function GenerateAccounts() {
         </Typography>
 
         <Typography variant="body2" color="textSecondary" align="center">
-          Rest assured, your information will not be stored or sent over the internet. It will solely be used for generating the accounts with Hereda SDK.
+          Rest assured, your information will not be stored or sent over the internet. It will only be used for generating the accounts with Hedera SDK.
         </Typography>
 
         <TextField
