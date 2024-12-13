@@ -99,7 +99,7 @@ export default function Step1_CreateContract() {
               variant="outlined"
               sx={{ width: '50ch', bgcolor: "#181818" }}
               value={uri}
-              autoFocus />
+              />
           </Stack>
           <Stack direction="row" spacing={2} >
 

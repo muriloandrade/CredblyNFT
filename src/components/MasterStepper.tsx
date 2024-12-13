@@ -4,7 +4,7 @@ import Box from '@mui/material/Box';
 import Stepper from '@mui/material/Stepper';
 import Step from '@mui/material/Step';
 import StepLabel from '@mui/material/StepLabel';
-import {ArrowForwardIos, ArrowBackIosNew, RestartAlt} from '@mui/icons-material';
+import {ArrowForwardIos, ArrowBackIosNew} from '@mui/icons-material';
 
 import Step1_Create from '../pages/Manufacturer_Steps/Step1_Create';
 import Step2_Mint from '../pages/Manufacturer_Steps/Step2_Mint';
@@ -47,10 +47,6 @@ export default function MasterStepper() {
     setActiveStep((prevActiveStep) => prevActiveStep - 1);
   };
 
-  const handleReset = () => {
-    setActiveStep(0);
-  };
-
   return (
     <Box sx={{ width: '100%' }}>
       <Stepper activeStep={activeStep}>
@@ -77,7 +73,7 @@ export default function MasterStepper() {
       >
 
         <Stack alignItems="center" justifyContent="center" >
-          <IconButton color="inherit" disabled={activeStep === 0} onClick={handleBack} ><ArrowBackIosNew /></IconButton>
+          <IconButton color="inherit" onClick={handleBack} sx={{ visibility: activeStep === 0 ? 'hidden' : 'visible' }} ><ArrowBackIosNew /></IconButton>
         </Stack>
 
         <Box
@@ -93,7 +89,7 @@ export default function MasterStepper() {
         </Box>
 
         <Stack alignItems="center" justifyContent="center" >
-          {activeStep === steps.length - 1 ? (<IconButton onClick={handleReset}><RestartAlt /></IconButton>) : (<IconButton onClick={handleNext}><ArrowForwardIos /></IconButton>)}
+          <IconButton onClick={handleNext} sx={{ visibility: activeStep === steps.length - 1 ? 'hidden' : 'visible' }} ><ArrowForwardIos /></IconButton>
         </Stack>
 
       </Stack>
