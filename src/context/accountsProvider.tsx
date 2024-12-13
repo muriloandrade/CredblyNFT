@@ -69,8 +69,8 @@ function AccountsProvider(props: any) {
 
 					console.log(`Creating ${acct.name} account...`);
 
-					//100ℏ for Manufacturers, 20ℏ for Retailer and Customer
-					const initBalance = index++ > 1 ? 20 : 100; 
+					//120ℏ for Manufacturers, 20ℏ for Retailer and Customer
+					const initBalance = index++ > 1 ? 20 : 120; 
 
 					const pvKey = PrivateKey.generateECDSA();
 

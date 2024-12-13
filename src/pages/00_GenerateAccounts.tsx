@@ -39,15 +39,15 @@ export default function GenerateAccounts() {
         </Typography>
 
         {/* Introduction text */}
-        <Typography variant="body2" color="textSecondary" paragraph align="center">
-          Initially, it'll be created four Hedera accounts (Brand_A, Brand_B, Retailer and Customer) to simulate interactions with the network and the smart contracts. Each will be funded with 10 hbars.
+        <Typography variant="body2" color="textSecondary" align="center">
+          Initially, it'll be created four Hedera accounts (Brand_A, Brand_B, Retailer and Customer), with a total expenditure of 280 ℏ, to simulate interactions with the network and the smart contracts. 
         </Typography>
 
-        <Typography variant="body2" color="textSecondary" paragraph align="center">
+        <Typography variant="body2" color="textSecondary" align="center">
           Please provide below your testnet ECDSA account data.
         </Typography>
 
-        <Typography variant="body2" color="textSecondary" paragraph align="center">
+        <Typography variant="body2" color="textSecondary" align="center">
           Rest assured, your information will not be stored or sent over the internet. It will solely be used for generating the accounts with Hereda SDK.
         </Typography>
 
