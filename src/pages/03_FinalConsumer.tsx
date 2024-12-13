@@ -24,7 +24,7 @@ export default function FinalConsumer() {
   const [nfts, setNfts] = useState<NftType[]>();
   const [flagNftsRedeemed, setFlagNftsRedeemed] = useState(0);
 
-  const { accounts, selectedAccount, client } = useContext(AccountsContext);
+  const { accounts, selectedAccount, client, updateBalances } = useContext(AccountsContext);
   const address = selectedAccount?.address;
 
   useEffect(() => {
@@ -119,8 +119,8 @@ export default function FinalConsumer() {
 
       const claimReceipt = client && claimTxResponse && await claimTxResponse.getReceipt(client);
 
-      // Wait 5 seconds to update node
-      await new Promise(resolve => setTimeout(resolve, 5000));
+      // Wait 6 seconds to update node
+      await new Promise(resolve => setTimeout(resolve, 6000));
 
       console.log("NFTs successfuly withdrawn", claimReceipt);
       toast.success("NFTs successfuly withdrawn");      
@@ -131,6 +131,7 @@ export default function FinalConsumer() {
       logError(error);
     } finally {
       setIsCalling(false);
+      updateBalances!();
     }
   }
 
