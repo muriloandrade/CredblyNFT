@@ -1,5 +1,5 @@
 import { Button, CircularProgress, Divider, Stack, TextField, Typography } from '@mui/material';
-import { Event, BigNumber, ethers } from 'ethers';
+import { ethers } from 'ethers';
 import { ChangeEvent, Fragment, useContext, useEffect, useState } from 'react';
 import Web3 from 'web3';
 import FileUploader from '../components/FileUploader';
