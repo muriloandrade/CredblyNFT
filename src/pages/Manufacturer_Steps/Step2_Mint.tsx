@@ -1,13 +1,11 @@
-import { Box, FormControl, Grid, InputLabel, Paper, Table, TableCell, TableBody, TableContainer, TableHead, TableRow, TextField, Stack, Button, CircularProgress, Skeleton } from '@mui/material';
-import MenuItem from '@mui/material/MenuItem';
-import Select, { SelectChangeEvent } from '@mui/material/Select';
+import { Box, Grid, Paper, Table, TableCell, TableBody, TableContainer, TableHead, TableRow, TextField, Stack, Button, CircularProgress } from '@mui/material';
 import { ChangeEvent, useContext, useEffect, useMemo, useState } from 'react';
 import toast from "react-hot-toast";
-import { logError, logTransactionLink, truncateString } from '../../utils/general';
+import { logError, logTransactionLink } from '../../utils/general';
 import { ethers } from 'ethers';
 import { AccountsContext } from '../../context/accountsProvider';
 import { ContractCallQuery, ContractExecuteTransaction, ContractFunctionParameters, ContractId, Hbar } from '@hashgraph/sdk';
-import { getAndSetClientContractCreatedEvents } from '../../utils/hedera';
+import SelectContract from '../../components/SelectContract';
 
 type Contract = {
   name: string;
@@ -32,12 +30,7 @@ export default function Step2_Mint() {
   const address = selectedAccount?.address;
   const [createdEvents, setCreatedEvents] = useState<ethers.Event[] | null>(null);
 
-  useEffect(() => {
 
-    // Get created contracts events to populate the selector
-    address && getAndSetClientContractCreatedEvents(setIsLoading, setCreatedEvents, address)
-
-  }, [selectedAccount]);
 
   // Memoize filtered events to avoid re-computation
   const filteredEvents = useMemo(() => {
@@ -56,10 +49,6 @@ export default function Step2_Mint() {
     setContracts(_contracts);
 
   }, [createdEvents])
-
-  const handleSelectedContract = (event: SelectChangeEvent<number>) => {
-    contracts && setContractSelected(event.target.value as number);
-  };
 
   function clearFields() {
     setRows(new Array<Row>(3).fill({ sku: '', amount: '' }));
@@ -159,44 +148,17 @@ export default function Step2_Mint() {
     <Grid container direction="row" justifyContent="space-evenly"
       component={Paper} p={3}>
       <Grid item pt={4}>
-        <Box>
-          <FormControl sx={{ m: 1, minWidth: 400 }}>
-            <InputLabel id="contracts-label">{isLoading ? 'Loading...' : 'Contract'}</InputLabel>
-            <Select
-              labelId="contract-select"
-              id="contract-select"
-              value={0 || contractSelected}
-              onChange={(event) => handleSelectedContract(event)}
-              autoWidth={false}
-              fullWidth
-              label="contracts"
-              disabled={isLoading}
-              autoFocus
-            >
-              {isLoading ? (
-                <MenuItem disabled value={'0'}>
-                  <Skeleton animation="wave" />
-                </MenuItem>
-              ) : (
-                contracts && contracts.length > 0 ? (contracts.map((contract, index) => (
-                  <MenuItem key={contract.address} value={index}>
-                    <Box sx={{ display: 'flex', justifyContent: 'space-between', width: '100%', gap: 2 }}>
-                      <span>{contract.name}</span>
-                      <span>{truncateString(contract.address, 6, 4)}</span>
-                    </Box>
-                  </MenuItem>)
-                )) : (
-                  <MenuItem disabled value={'0'}>
-                    <span style={{ color: 'gray' }}>No contracts for {selectedAccount?.name} account</span>
-                  </MenuItem>)
-              )}
-            </Select>
-          </FormControl>
-        </Box>
+        <SelectContract
+          isLoading={isLoading}
+          setIsLoading={setIsLoading}
+          contracts={contracts}
+          contractSelected={contractSelected}
+          setContractSelected={setContractSelected}
+          setCreatedEvents={setCreatedEvents}
+        />
       </Grid>
       <Grid item>
         <Box>
-
           <Grid container spacing={2} direction="column" >
             <Grid item>
               <TableContainer>
@@ -223,16 +185,14 @@ export default function Step2_Mint() {
                               disabled={!client || isCalling || isLoading || !contracts || !contracts[contractSelected] || contractSelected == undefined}
                               onChange={(e) => handleAmountChange(e, index)} />
                           </TableCell>
-                        </TableRow>
-                      )
-                    })}
+                        </TableRow>)}
+                      )}
                   </TableBody>
                 </Table>
               </TableContainer>
             </Grid>
             <Grid item >
               <Stack>
-
                 <Button
                   onClick={() => call()}
                   disabled={!client || isCalling || isLoading || !contracts || !contracts[contractSelected] || contractSelected == undefined}
@@ -241,13 +201,11 @@ export default function Step2_Mint() {
                   sx={{ width: "100%", minHeight: "45px", maxHeight: "45px" }}>
                   {!client ? "Disconnected" : contractSelected == undefined ? "Select contract" : isCalling ? <CircularProgress size="1rem" color="inherit" /> : "Mint Tokens"}
                 </Button>
-
               </Stack>
             </Grid>
           </Grid>
-
         </Box>
       </Grid>
-    </Grid>
+    </Grid >
   )
 }

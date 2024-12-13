@@ -1,12 +1,12 @@
-import { Box, Button, CircularProgress, FormControl, Grid, InputLabel, Paper, Select, SelectChangeEvent, Skeleton, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TextField } from '@mui/material';
-import MenuItem from '@mui/material/MenuItem';
+import { Box, Button, CircularProgress, Grid, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TextField } from '@mui/material';
 import { ChangeEvent, useContext, useEffect, useMemo, useState } from 'react';
 import toast from 'react-hot-toast';
-import { logError, logTransactionLink, truncateString } from '../../utils/general';
+import { logError, logTransactionLink } from '../../utils/general';
 import { AccountsContext } from '../../context/accountsProvider';
 import { ethers } from 'ethers';
 import { AccountInfoQuery, ContractCallQuery, ContractExecuteTransaction, ContractFunctionParameters, ContractId, TokenAssociateTransaction, TokenId } from '@hashgraph/sdk';
 import { getAndSetClientContractCreatedEvents } from '../../utils/hedera';
+import SelectContract from '../../components/SelectContract';
 
 type Contract = {
   name: string;
@@ -61,10 +61,6 @@ export default function Step3_Transfer() {
   function clearFields() {
     setRows(new Array<Row>(3).fill({ sku: '', stock: '', amount: '' }));
   }
-
-  const handleChange = (event: SelectChangeEvent<number>) => {
-    contracts && setContractSelected(event.target.value as number);
-  };
 
   function handleSkuChange(e: ChangeEvent, index: number) {
     var sku = (e.target as HTMLInputElement).value.trim();
@@ -144,7 +140,7 @@ export default function Step3_Transfer() {
             const associateStatus = associateReceipt.status.toString();
             console.log(`Association status of token ${tokenId}:`, associateStatus);
             toast(`Token ${tokenId} was associated to Retailer`)
-          } else { 
+          } else {
             console.log(`Token ${tokenId} already associated`)
           }
         }
@@ -188,45 +184,17 @@ export default function Step3_Transfer() {
     <Grid container direction="row" justifyContent="space-evenly"
       component={Paper} p={3}>
       <Grid item pt={4}>
-
-        <Box>
-          <FormControl sx={{ m: 1, minWidth: 400 }}>
-            <InputLabel id="contracts-label">{isLoading ? 'Loading...' : 'Contract'}</InputLabel>
-            <Select
-              labelId="contract-select"
-              id="contract-select"
-              value={0 || contractSelected}
-              onChange={(event) => handleChange(event)}
-              autoWidth={false}
-              fullWidth
-              label="contracts"
-              disabled={isLoading}
-              autoFocus
-            >
-              {isLoading ? (
-                <MenuItem disabled value={'0'}>
-                  <Skeleton animation="wave" />
-                </MenuItem>
-              ) : (
-                contracts && contracts.length > 0 ? (contracts.map((contract, index) => (
-                  <MenuItem key={contract.address} value={index}>
-                    <Box sx={{ display: 'flex', justifyContent: 'space-between', width: '100%', gap: 2 }}>
-                      <span>{contract.name}</span>
-                      <span>{truncateString(contract.address, 6, 4)}</span>
-                    </Box>
-                  </MenuItem>)
-                )) : (
-                  <MenuItem disabled value={'0'}>
-                    <span style={{ color: 'gray' }}>No contracts for {selectedAccount?.name} account</span>
-                  </MenuItem>)
-              )}
-            </Select>
-          </FormControl>
-        </Box>
+        <SelectContract
+          isLoading={isLoading}
+          setIsLoading={setIsLoading}
+          contracts={contracts}
+          contractSelected={contractSelected}
+          setContractSelected={setContractSelected}
+          setCreatedEvents={setCreatedEvents}
+        />
       </Grid>
       <Grid item>
         <Box>
-
           <Grid container spacing={2} direction="column" >
             <Grid item>
               <TableContainer>
@@ -246,7 +214,6 @@ export default function Step3_Transfer() {
                               value={row.sku}
                               disabled={!client || isCalling || isLoading || !contracts || !contracts[contractSelected] || contractSelected == undefined}
                               sx={{ width: "100%" }} onChange={(e) => handleSkuChange(e, index)}
-
                             />
                           </TableCell>
                           <TableCell align="center" sx={{ p: 0, borderBottom: 0, bgcolor: "#181818" }}>
@@ -257,14 +224,11 @@ export default function Step3_Transfer() {
                         </TableRow>
                       )
                     })}
-
                   </TableBody>
                 </Table>
               </TableContainer>
             </Grid>
-
             <Grid item>
-
               <Button
                 onClick={() => call()}
                 disabled={!client || isCalling || isLoading || !contracts || !contracts[contractSelected] || contractSelected == undefined}
@@ -273,9 +237,7 @@ export default function Step3_Transfer() {
                 sx={{ width: "100%", minHeight: "40px", maxHeight: "40px" }}>
                 {!client ? "Disconnected" : contractSelected == undefined ? "Select contract" : isCalling ? <CircularProgress size="1rem" color="inherit" /> : "Transfer to Retailer"}
               </Button>
-
             </Grid>
-
           </Grid>
         </Box>
       </Grid>
