@@ -55,7 +55,7 @@ contract Credbly_HTS is HederaTokenService, ExpiryHelper, KeyHelper, FeeHelper {
         emit ResponseCode(responseCode);
 
         if (responseCode != HederaResponseCodes.SUCCESS) {
-            revert("Clt: Failed to create token");
+            revert("Hts: Failed to create token");
         }
         emit CreatedToken(tokenAddress);
     }
@@ -97,7 +97,7 @@ contract Credbly_HTS is HederaTokenService, ExpiryHelper, KeyHelper, FeeHelper {
         emit ResponseCode(responseCode);
 
         if (responseCode != HederaResponseCodes.SUCCESS) {
-            revert("Clt: Failed to create NFT");
+            revert("Hts: Failed to create NFT");
         }
         emit CreatedToken(tokenAddress);
     }
@@ -119,7 +119,7 @@ contract Credbly_HTS is HederaTokenService, ExpiryHelper, KeyHelper, FeeHelper {
         emit ResponseCode(responseCode);
 
         if (responseCode != HederaResponseCodes.SUCCESS) {
-            revert("Clt: Failed to mint token");
+            revert("Hts: Failed to mint token");
         }
 
         emit MintedToken(newTotalSupply, serialNumbers);
@@ -137,7 +137,7 @@ contract Credbly_HTS is HederaTokenService, ExpiryHelper, KeyHelper, FeeHelper {
         emit ResponseCode(responseCode);
 
         if (responseCode != HederaResponseCodes.SUCCESS) {
-            revert("Clt: Failed to get token info");
+            revert("Hts: Failed to get token info");
         }
 
         emit TokenInfo(tokenInfo);
@@ -156,9 +156,18 @@ contract Credbly_HTS is HederaTokenService, ExpiryHelper, KeyHelper, FeeHelper {
         emit ResponseCode(responseCode);
 
         if (responseCode != HederaResponseCodes.SUCCESS) {
-            revert("Clt: Failed to burn token");
+            revert("Hts: Failed to burn token");
         }
-    }    
+    }
+
+    function _transferToken(address token, address sender, address receiver, int64 amount) internal returns (int responseCode) {
+        responseCode = HederaTokenService.transferToken(token, sender, receiver, amount);
+        emit ResponseCode(responseCode);
+
+        if (responseCode != HederaResponseCodes.SUCCESS) {
+            revert();
+        }
+    }
     
     //State variables for _transferNfts
     mapping(address receiver => address[] nftAddress) addr;
@@ -190,7 +199,7 @@ contract Credbly_HTS is HederaTokenService, ExpiryHelper, KeyHelper, FeeHelper {
             );
 
             if (responseCode != HederaResponseCodes.SUCCESS) {
-                revert("Clt: Failed to transfer NFTs");
+                revert("Hts: Failed to transfer NFTs");
             }
 
         } else {

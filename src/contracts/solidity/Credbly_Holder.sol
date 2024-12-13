@@ -2,14 +2,9 @@
 
 pragma solidity 0.8.28;
 
-import "@openzeppelin/contracts/utils/introspection/IERC165.sol";
-import "@openzeppelin/contracts/utils/introspection/ERC165.sol";
-import "@openzeppelin/contracts/token/ERC1155/IERC1155Receiver.sol";
-import "@openzeppelin/contracts/token/ERC1155/utils/ERC1155Holder.sol";
-import { ERC2771Context } from "@gelatonetwork/relay-context/contracts/vendor/ERC2771Context.sol";
 import "./interfaces/ICredbly_Client.sol";
 
-contract Credbly_Holder is ERC1155Holder {
+contract Credbly_Holder {
     
     address owner;
     address master;
@@ -29,8 +24,8 @@ contract Credbly_Holder is ERC1155Holder {
         string uri;
         string sku;
     }
-    mapping(bytes32 => PendingNFTs) hashesNFTs;
-    mapping(address => bool) allowedClientsContracts;
+    mapping(bytes32 hash => PendingNFTs) hashesNFTs;
+    mapping(address _contract => bool allowed) allowedClientsContracts;
 
     event PendingNftsRegistered(address _fromClient, address[] _nftsAddresses, int64[] _nftsSerialNumbers, uint _timestamp);
     event NftsRedeemed(address indexed redeemer, NFT[] _nfts, uint _timestamp);
@@ -59,7 +54,7 @@ contract Credbly_Holder is ERC1155Holder {
         emit PendingNftsRegistered(msg.sender, _nftsAddresses, _nftsSerialNumbers, block.timestamp);
     }
 
-    mapping(address => NFT[]) _nfts;
+    mapping(address consumer => NFT[]) _nfts;
     
     // Future implementation: Sponsored function
     function claimNFTs(bytes32 _invoiceHash, bytes32 _password) 

@@ -12,13 +12,12 @@ contract Credbly_Client is Ownable, Credbly_HTS {
     ICredbly_Master master;
     ICredbly_Holder holder;
     address masterAddr;
-    // uint256 accountBalance;
     string private baseURI;
-    mapping(string => address) public skuTokenAddr;
-    mapping(address => string) tokenAddrSku;
+    mapping(string  => address) public skuTokenAddr;
+    mapping(address => string)  public tokenAddrSku;
     mapping(address => address) public tokenNft;
     mapping(address => address) public nftToken;
-    mapping(address => mapping(address => int64)) public tokenSupply;
+    mapping(address token => mapping(address possessor => int64 amount)) public tokenSupply;
 
     event Withdrawn(address indexed to, uint256 value, uint256 timestamp);
     event TokensConvertedToNFTs(
@@ -28,6 +27,13 @@ contract Credbly_Client is Ownable, Credbly_HTS {
         uint256 timestamp
     );
     event FeePaid(uint256 amount, uint256 timestamp);
+    
+    event TokensTransfeered(
+        address indexed sender,
+        address indexed receiver,
+        address[] tokensAddresses,
+        int64[] amounts
+    );
 
     modifier onlyHolder() {
         require(msg.sender == address(holder), "Clt: Not allowed");
@@ -125,18 +131,23 @@ contract Credbly_Client is Ownable, Credbly_HTS {
         int64[] memory amounts,
         address receiver
     ) external {
+        
         require(
             tokens.length == amounts.length,
             "Clt: Arrays with different lengths"
         );
-        for (uint256 i; i < tokens.length; i++) {
-            require(
-                tokenSupply[msg.sender][tokens[i]] >= amounts[i],
-                "Clt: Not enough token supply"
-            );
-            tokenSupply[msg.sender][tokens[i]] -= amounts[i];
-            tokenSupply[receiver][tokens[i]] += amounts[i];
+        
+        // The owner already owns the tokens of this contract (treasury)
+        require( receiver != owner(), "Clt: Transfer to owner not allowed");        
+        
+        // If sender is the owner, token belongs to this contract
+        address sender = msg.sender == owner() ? address(this) : msg.sender;
+        
+        for (uint256 i; i < tokens.length; i++) {            
+            _transferToken(tokens[i], sender, receiver, amounts[i]);
         }
+        master.setAccountKnowsClient(receiver);
+        emit TokensTransfeered(sender, receiver, tokens, amounts);
     }
 
     mapping(address => int64[]) serialNumbers;
@@ -156,6 +167,8 @@ contract Credbly_Client is Ownable, Credbly_HTS {
         for (uint256 i; i < amounts.length; i++) {
             totalAmount += uint256(int256(amounts[i]));
         }
+
+        // Creates the arrays with the total amount of tokens to be converted
         address[] memory nftsAddresses = new address[](totalAmount);
         int64[] memory nftsSerialNumbers = new int64[](totalAmount);
         address[] memory tokensAddresses = new address[](totalAmount); //only for the event
@@ -165,22 +178,19 @@ contract Credbly_Client is Ownable, Credbly_HTS {
             address tokenAddr = skuTokenAddr[skus[i]];
             address nftAddr = tokenNft[tokenAddr];
 
-            require(
-                tokenSupply[msg.sender][tokenAddr] >= amounts[i],
-                "Clt: Not enough token supply"
-            );
-
-            tokenSupply[msg.sender][tokenAddr] -= amounts[i];
+            // Before burning, seller transfers the tokens to this contract (treasury)
+            // (allowance needed)
+            _transferToken(tokenAddr, msg.sender, address(this), amounts[i]);
             _burnToken(tokenAddr, amounts[i], new int64[](0));
 
+            // Empty metadata
             bytes[] memory metadata = new bytes[](1);
             metadata[0] = bytes("");
+
+            // Mint an NFT for each token
             for (int64 j; j < amounts[i]; j++) {
-                (, , int64[] memory serialNumber) = _mintToken(
-                    nftAddr,
-                    0,
-                    metadata
-                );
+
+                (, , int64[] memory serialNumber) = _mintToken(nftAddr, 0, metadata);
 
                 for (uint256 k; k < serialNumber.length; k++) {
                     tokensAddresses[index] = tokenAddr;
@@ -188,7 +198,7 @@ contract Credbly_Client is Ownable, Credbly_HTS {
                     nftsSerialNumbers[index++] = serialNumber[k];
                 }
             }
-        }
+        }        
         emit TokensConvertedToNFTs(
             msg.sender,
             tokensAddresses,

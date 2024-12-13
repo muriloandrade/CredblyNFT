@@ -13,11 +13,13 @@ contract Credbly_Master is Ownable {
 
     struct Client {
         uint256 contractsCount;
-        mapping(uint256 => address) contracts;
+        mapping(uint256 id => address) contracts;
     }
 
-    mapping(address => Client) clients;
-    mapping(address => bool) activeContracts;
+    mapping(address owner => Client) clients;
+    mapping(address _contract => bool active) activeContracts;
+    mapping(address account => address[] clients) accountKnowsClients;
+    mapping(address _contract => string name) clientName;
 
     string[] uris = ["0"];
 
@@ -141,14 +143,26 @@ contract Credbly_Master is Ownable {
     function getContractById(uint256 _id) external view returns (address) {
         require(
             clients[msg.sender].contracts[_id] != address(0),
-            "Contract not found"
+            "Mst: Contract not found"
         );
         return clients[msg.sender].contracts[_id];
     }
 
-    // For development purposes
-    function resetUris() external onlyOwner {
-        delete uris;
+    // Whether the account has ever received a token from the Client
+    function setAccountKnowsClient(address account) external onlyAllowed {
+
+        bool alreadyKnown;
+        address[] memory accountKnownClients = accountKnowsClients[account];
+        for (uint256 i = 0; i < accountKnownClients.length; i++) {
+            if (accountKnownClients[i] == msg.sender) {
+                alreadyKnown = true;
+            }
+        }
+        if (!alreadyKnown) accountKnowsClients[account].push(msg.sender);
+    }
+
+    function getKnownClients() external view returns ( address[] memory ) {
+        return accountKnowsClients[msg.sender];
     }
 
     /**
