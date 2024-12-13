@@ -1,14 +1,14 @@
 import { Box, Button, CircularProgress, FormControl, Grid, MenuItem, Paper, Select, SelectChangeEvent, Skeleton, Stack, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TextField } from '@mui/material';
-// import { useSDK } from '@thirdweb-dev/react';
 import { ChangeEvent, useContext, useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
 import { Web3 } from 'web3';
 import FileUploader from '../components/FileUploader';
-import { ContractExecuteTransaction, ContractFunctionParameters, ContractId } from '@hashgraph/sdk';
+import { AccountAllowanceApproveTransaction, AccountId, ContractCallQuery, ContractExecuteTransaction, ContractFunctionParameters, ContractId, TokenId } from '@hashgraph/sdk';
 import { AccountsContext } from '../context/accountsProvider';
 import { Buffer } from 'buffer';
 import { ethers } from 'ethers';
-import master from "../contracts/Credbly_Master";
+import { logError, logTransactionLink, truncateString } from '../utils/general';
+import { getKnownClients } from '../utils/hedera';
 // @ts-ignore
 window.Buffer = Buffer;
 
@@ -30,27 +30,14 @@ export default function Retailer() {
   const [password, setPassword] = useState<string>('');
   const [createdEvents, setCreatedEvents] = useState<ethers.Event[] | null>(null);
 
-  const { client } = useContext(AccountsContext);
+  const { client, selectedAccount, updateBalances } = useContext(AccountsContext);
 
   // Get all events of contracts created to fulfill the selectors
   useEffect(() => {
 
-    setIsLoading(true);
-    const getEvents = async () => {
-      const provider = new ethers.providers.JsonRpcProvider("https://testnet.hashio.io/api");
-      const masterContract = new ethers.Contract(master.address, master.abi, provider);
-      const masterBlock = (await provider.getTransactionReceipt(master.transactionHash)).blockNumber
-      const events = await masterContract.queryFilter('ClientContractCreated', masterBlock);
-      events && setCreatedEvents(events);
-      setIsLoading(false);
-    }
-    getEvents().catch(error => {
-      toast.error(`There was an error. Check log.`)
-      console.log(error)
-      setIsLoading(false)
-    });
+    getKnownClients(setIsLoading, setCreatedEvents, client!);
 
-  }, []);
+  }, [client]);
 
   function clearFields() {
     setPassword('');
@@ -67,7 +54,7 @@ export default function Retailer() {
 
   function handleSkuChange(e: ChangeEvent, index: number) {
     var result = rows.map((r, i) => {
-      if (i == index) return { ...r, sku: (e.target as HTMLInputElement).value };
+      if (i == index) return { ...r, sku: (e.target as HTMLInputElement).value.trim() };
       return r;
     })
     setRows(result);
@@ -96,6 +83,7 @@ export default function Retailer() {
     const passwordHash = web3.utils.soliditySha3({ type: "string", value: password });
     const hash = web3.utils.soliditySha3({ type: "bytes", value: invoiceHash }, { type: "bytes", value: passwordHash });
 
+    let success = true;
     try {
       setIsCalling(true);
       for (let i = 0; i < contracts.length; i++) {
@@ -112,36 +100,66 @@ export default function Retailer() {
         })
 
         if (skus.length != 0) {
-          const id = ContractId.fromEvmAddress(0, 0, contracts[i].trim()); // Client contractId
+          const contractId = await ContractId.fromEvmAddress(0, 0, contracts[i].trim()).populateAccountNum(client!); // Client contractId
+
+          // For each SKU of same contract...
+          for (let j = 0; j < skus.length; j++) {
+
+            //Get tokenAddress by SKU
+            const query = new ContractCallQuery()
+              .setContractId(contractId)
+              .setGas(500_000)
+              .setFunction("skuTokenAddr", new ContractFunctionParameters().addString(skus[j]));
+            const contractCallResult = await query.execute(client!);
+            const tokenAddress = contractCallResult.getAddress();
+            if (Number(tokenAddress) == 0) throw new Error(`Token not found for SKU '${skus[j]}'`)
+            const tokenId = TokenId.fromSolidityAddress(tokenAddress);
+
+            // Before being burned, tokens must return to the contract (treasury)
+            // So, the seller must allow the transfer
+            const allowTx = new AccountAllowanceApproveTransaction()
+              .approveTokenAllowance(tokenId, selectedAccount!.id as AccountId, `0.0.${contractId.num}`, amounts[j])
+              .freezeWith(client!)
+            const signAllowTx = await allowTx.sign(selectedAccount!.privateKey!);
+            const allowTxResponse = await signAllowTx.execute(client!);
+            logTransactionLink('allowanceApprove', allowTxResponse!.transactionId!); 
+            const allowTxReceipt = await allowTxResponse.getReceipt(client!);
+            const transactionStatus = allowTxReceipt.status;
+            console.log(`Allowance status for token ${tokenId}: ` + transactionStatus.toString());
+          }
+
+          // Convert tokens to NFTs to be claimed
           const params = new ContractFunctionParameters()
             .addBytes32(Buffer.from(hash!.slice(2), 'hex'))
             .addStringArray(skus)
             .addInt64Array(amounts)
 
-          // Convert tokens to NFTs to be claimed
-          const mintTokens = new ContractExecuteTransaction()
-            .setContractId(id)
+          const tokensToNftTx = new ContractExecuteTransaction()
+            .setContractId(contractId)
             .setGas(5_000_000)
             .setFunction(
               'tokensToNftsPending',
               params
             );
-          const txResponse = client && await mintTokens.execute(client);
-          const receipt = client && txResponse && await txResponse.getReceipt(client);
+          const tokensToNftTxResponse = await tokensToNftTx.execute(client!);
+          logTransactionLink('tokensToNftsPending', tokensToNftTxResponse!.transactionId!);
 
-          console.log("NFTs sent to Holder", receipt)
-          toast.success("Success. NFTs available to be claimed");
-          clearFields();
+          const tokenToNftTxReceipt = tokensToNftTxResponse && await tokensToNftTxResponse.getReceipt(client!);
+          console.log("NFTs sent to Holder", tokenToNftTxReceipt)
         }
       }
-    } catch (err) {
-      console.error("Contract call failure", err);
-      toast.error("An error has occured\nCheck console log");
+    } catch (error) {
+      logError(error);
+      success = false;
     } finally {
       setIsCalling(false);
+      updateBalances!();
+      if (success) {
+        toast.success("Success. NFTs available to be claimed");
+        clearFields();
+      }
     }
   }
-
 
   return (
 
@@ -172,7 +190,8 @@ export default function Retailer() {
                             id={`contract-select-${index}`}
                             value={isLoading ? '0' : rows[index].contract}
                             onChange={(event) => handleContractSelected(event, index)}
-                            autoWidth
+                            autoWidth={false}
+                            fullWidth
                             disabled={isLoading}
                             sx={{ bgcolor: "#181818" }}
                             autoFocus
@@ -182,8 +201,17 @@ export default function Retailer() {
                                 <Skeleton animation="wave" />
                               </MenuItem>
                             ) : (
-                              createdEvents?.map((event) => (
-                                <MenuItem key={event.args![2]} value={event.args![1]}>{event.args![2]}</MenuItem>))
+                              createdEvents && createdEvents.length > 0 ? (createdEvents.map((event) => (
+                                <MenuItem key={event.args![2]} value={event.args![1]}>
+                                  <Box sx={{ display: 'flex', justifyContent: 'space-between', width: '100%', gap: 2 }}>
+                                    <span>{event.args![2]}</span>
+                                    <span>{truncateString(event.args![1], 6, 4)}</span>
+                                  </Box>
+                                </MenuItem>)
+                              )) : (
+                                <MenuItem disabled value={'0'}>
+                                  No contracts related to {selectedAccount?.name} account
+                                </MenuItem>)
                             )}
                           </Select>
                         </FormControl>

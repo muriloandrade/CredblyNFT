@@ -1,6 +1,7 @@
 import { AccountBalance, AccountBalanceQuery, AccountCreateTransaction, AccountId, AccountInfoQuery, Client, Hbar, PrivateKey } from "@hashgraph/sdk";
 import React, { useEffect, useRef, useState } from "react";
 import toast from "react-hot-toast";
+import { logError, logTransactionLink } from "../utils/general";
 
 export interface AccountType {
 	name: string;
@@ -20,6 +21,7 @@ type AccountsContextType = {
 	generateAccountsFcn?: (userAccountId: string, userPrivateKey: string) => void;
 	client?: Client;
 	isLoading?: boolean;
+	updateBalances?: () => void;
 }
 
 export const AccountsContext = React.createContext<AccountsContextType>({});
@@ -77,6 +79,7 @@ function AccountsProvider(props: any) {
 						.setKey(pvKey.publicKey)
 						.setAlias(pvKey.publicKey.toEvmAddress())
 						.execute(client)
+					logTransactionLink('accountCreate', transaction!.transactionId);
 
 					const receipt = await transaction.getReceipt(client);
 
@@ -104,8 +107,7 @@ function AccountsProvider(props: any) {
 					}
 				}
 			} catch (error) {
-				toast.error('An error has occured. Check log')
-				console.log('An error has occured generating accounts', error);
+				logError(error);
 			} finally {
 				setIsLoading(false);
 			}
@@ -166,7 +168,7 @@ function AccountsProvider(props: any) {
 	}
 
 	return (
-		<AccountsContext.Provider value={{ accounts, setAccounts, selectedAccount, setSelectedAccount, client, generateAccountsFcn, isLoading }}>
+		<AccountsContext.Provider value={{ accounts, setAccounts, selectedAccount, setSelectedAccount, client, generateAccountsFcn, isLoading, updateBalances }}>
 			{props.children}
 		</AccountsContext.Provider>
 	)

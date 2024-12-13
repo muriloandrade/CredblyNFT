@@ -1,7 +1,7 @@
 import React from "react";
 import { Box, Typography, Button, Tooltip, CircularProgress } from "@mui/material";
 import Icon from "@mui/material/Icon";
-import { copyToClipboard, truncateString } from "../utils/Utils";
+import { copyToClipboard, truncateString } from "../utils/general";
 
 interface AccountCardProps {
   icon: React.ReactNode;

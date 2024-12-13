@@ -1,13 +1,11 @@
 import { Button, CircularProgress, Paper, Skeleton, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Tooltip, Typography } from '@mui/material';
 import { ethers } from 'ethers';
 import { useCallback, useEffect, useState, useContext, useMemo } from 'react';
-import toast from "react-hot-toast";
-import { copyToClipboard } from '../utils/Utils';
+import { copyToClipboard } from '../utils/general';
 import { ContractId, ContractInfoQuery, ContractInfo } from "@hashgraph/sdk";
-
-import master from "../contracts/Credbly_Master";
 import { AccountsContext } from '../context/accountsProvider';
 import { Contract } from '../pages/Manufacturer_Steps/Step1_Create';
+import { getAndSetClientContractCreatedEvents } from '../utils/hedera';
 
 interface ContractsTableProps {
   flagCreated: number;
@@ -26,23 +24,9 @@ export default function ContractsTable(props: ContractsTableProps) {
 
   // Loads contracts creation events when account or flag changes
   useEffect(() => {
-    setIsLoading(true);
-    const getEvents = async () => {
-      const provider = new ethers.providers.JsonRpcProvider("https://testnet.hashio.io/api");
-      const masterContract = new ethers.Contract(master.address, master.abi, provider);
-      const masterBlock = (await provider.getTransactionReceipt(master.transactionHash)).blockNumber
 
-      const clientContractCreatedFilter = address && masterContract.filters.ClientContractCreated(ethers.utils.getAddress(address));
-      const events = clientContractCreatedFilter && await masterContract.queryFilter(clientContractCreatedFilter, masterBlock);
-      events?.length == 0 && setIsLoading(false);
-      events && setCreatedEvents(events);
-    }
+    address && getAndSetClientContractCreatedEvents(setIsLoading, setCreatedEvents, address)
 
-    getEvents().catch(error => {
-      toast.error(`An error has occured\nCheck console log`)
-      console.log(`Error retrieving events`, error)
-      setIsLoading(false)
-    });
   }, [flagCreated, selectedAccount]);
 
   // Function to obtain contracts balance asynchronously
@@ -112,7 +96,7 @@ export default function ContractsTable(props: ContractsTableProps) {
             </TableRow>
           )}
 
-          {!isLoading && rows && rows.length == 0 ? <TableRow><TableCell colSpan={4} ><Typography color={'grey'}>No contracts for the selected account</Typography></TableCell></TableRow> : rows?.map((row) => <TableRow key={row.address} >
+          {!isLoading && rows && rows.length == 0 ? <TableRow><TableCell colSpan={4} ><Typography color={'grey'}>No contracts for {selectedAccount?.name} account</Typography></TableCell></TableRow> : rows?.map((row) => <TableRow key={row.address} >
             <TableCell align="left"><Tooltip title={row.uri}><Typography color="gray">{row.name}</Typography></Tooltip></TableCell>
             <TableCell align="center"><Tooltip title="click to copy"><Button variant="text" sx={{ typography: 'body1', fontFamily: 'monospace' }} onClick={() => copyToClipboard(row.address)}>{row.address}</Button></Tooltip></TableCell>
             <TableCell align="right" width={200}><Typography color="gray">{row.balance ? row.balance : <CircularProgress size="1.5rem" color="inherit" />}</Typography></TableCell>

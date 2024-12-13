@@ -1,12 +1,12 @@
 import { Box, Button, CircularProgress, FormControl, Grid, InputLabel, Paper, Select, SelectChangeEvent, Skeleton, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TextField } from '@mui/material';
 import MenuItem from '@mui/material/MenuItem';
-import { ChangeEvent, useContext, useEffect, useState } from 'react';
+import { ChangeEvent, useContext, useEffect, useMemo, useState } from 'react';
 import toast from 'react-hot-toast';
-import { truncateString } from '../../utils/Utils';
-import master from "../../contracts/Credbly_Master";
+import { logError, logTransactionLink, truncateString } from '../../utils/general';
 import { AccountsContext } from '../../context/accountsProvider';
 import { ethers } from 'ethers';
 import { AccountInfoQuery, ContractCallQuery, ContractExecuteTransaction, ContractFunctionParameters, ContractId, TokenAssociateTransaction, TokenId } from '@hashgraph/sdk';
+import { getAndSetClientContractCreatedEvents } from '../../utils/hedera';
 
 type Contract = {
   name: string;
@@ -25,42 +25,32 @@ export default function Step3_Transfer() {
   const [isCalling, setIsCalling] = useState(false);
 
   const [contracts, setContracts] = useState<Contract[]>();
-  const [contractSelected, setContractSelected] = useState(0);
+  const [contractSelected, setContractSelected] = useState<number>(0);
   const [rows, setRows] = useState<Row[]>(new Array<Row>(3).fill({ sku: '', stock: '', amount: '' }));
-
-  const { accounts, selectedAccount, client } = useContext(AccountsContext);
-  const address = selectedAccount?.address;
   const [createdEvents, setCreatedEvents] = useState<ethers.Event[] | null>(null);
+
+  const { accounts, selectedAccount, client, updateBalances } = useContext(AccountsContext);
+  const address = selectedAccount?.address;
 
   useEffect(() => {
 
-    setIsLoading(true);
-
-    const getEvents = async () => {
-      const provider = new ethers.providers.JsonRpcProvider("https://testnet.hashio.io/api");
-      const masterContract = new ethers.Contract(master.address, master.abi, provider);
-      const masterBlock = (await provider.getTransactionReceipt(master.transactionHash)).blockNumber
-
-      const clientContractCreatedFilter = address && masterContract.filters.ClientContractCreated(ethers.utils.getAddress(address));
-      const events = clientContractCreatedFilter && await masterContract.queryFilter(clientContractCreatedFilter, masterBlock);
-      events && setCreatedEvents(events)
-      setIsLoading(false);
-    }
-
-    getEvents().catch(error => {
-      toast.error(`An error has occured\nCheck console log`)
-      console.log(`Error retrieving events`, error)
-      setIsLoading(false)
-    });
+    address && getAndSetClientContractCreatedEvents(setIsLoading, setCreatedEvents, address)
 
   }, [selectedAccount]);
+
+  // Memoize filtered events to avoid re-computation
+  const filteredEvents = useMemo(() => {
+    return createdEvents?.filter(event =>
+      event.args && event.args[0].toUpperCase() === address?.toUpperCase()
+    );
+  }, [createdEvents, address]);
 
   useEffect(() => {
 
     if (createdEvents?.length == 0) toast('No contracts found')
 
     let _contracts: Contract[] = [];
-    createdEvents?.filter((event) => event.args && event.args[0].toUpperCase() == address?.toUpperCase()).map(async (event) => {
+    filteredEvents?.map(async (event) => {
       event && event.args && _contracts.push({ name: event.args[2], address: event.args[1] });
     });
 
@@ -77,7 +67,7 @@ export default function Step3_Transfer() {
   };
 
   function handleSkuChange(e: ChangeEvent, index: number) {
-    var sku = (e.target as HTMLInputElement).value;
+    var sku = (e.target as HTMLInputElement).value.trim();
 
     var result = rows.map((r, i) => {
       if (i == index) return { ...r, sku: sku };
@@ -146,14 +136,19 @@ export default function Step3_Transfer() {
               .freezeWith(client!);
 
             const associateTxSigned = await associateTx.sign(retailer.privateKey!);
-            const associateResponse = await associateTxSigned.execute(client!);
-            const associateReceipt = await associateResponse.getReceipt(client!);
+            const associateTxResponse = await associateTxSigned.execute(client!);
+            logTransactionLink('tokenAssociate', associateTxResponse!.transactionId!);
+
+            const associateReceipt = await associateTxResponse.getReceipt(client!);
 
             const associateStatus = associateReceipt.status.toString();
             console.log(`Association status of token ${tokenId}:`, associateStatus);
+            toast(`Token ${tokenId} was associated to Retailer`)
+          } else { 
+            console.log(`Token ${tokenId} already associated`)
           }
         }
-        
+
         //Batch transfer
         const params = new ContractFunctionParameters()
           .addAddressArray(tokens)
@@ -168,21 +163,23 @@ export default function Step3_Transfer() {
             params
           );
 
-        const transferTokensResponse = client && await transferTokensTx.execute(client);
-        const transferTokensReceipt = client && transferTokensResponse && await transferTokensResponse.getReceipt(client);
+        const transferTokensTxResponse = client && await transferTokensTx.execute(client);
+        logTransactionLink('transferTokens', transferTokensTxResponse!.transactionId!);
+
+        const transferTokensReceipt = client && transferTokensTxResponse && await transferTokensTxResponse.getReceipt(client);
 
         console.log("Tokens successfuly transfeered", transferTokensReceipt)
         toast.success("Tokens successfuly transfeered");
-        clearFields();        
+        clearFields();
       }
       else {
         throw new Error("No contract selected");
       }
-    } catch (err) {
-      console.error("Contract call failure", err);
-      toast.error("An error has occured\nCheck console log");
+    } catch (error) {
+      logError(error)
     } finally {
       setIsCalling(false);
+      updateBalances!();
     }
   }
 
@@ -194,34 +191,43 @@ export default function Step3_Transfer() {
 
         <Box>
           <FormControl sx={{ m: 1, minWidth: 400 }}>
-            <InputLabel id="contracts-label">Contract</InputLabel>
+            <InputLabel id="contracts-label">{isLoading ? 'Loading...' : 'Contract'}</InputLabel>
             <Select
               labelId="contract-select"
               id="contract-select"
               value={0 || contractSelected}
               onChange={(event) => handleChange(event)}
-              autoWidth
+              autoWidth={false}
+              fullWidth
               label="contracts"
               disabled={isLoading}
-              sx={{ bgcolor: "#181818" }}
               autoFocus
             >
               {isLoading ? (
-                <MenuItem disabled value={0}>
+                <MenuItem disabled value={'0'}>
                   <Skeleton animation="wave" />
                 </MenuItem>
               ) : (
-                contracts?.map((contract, index: number) => (
-                  <MenuItem key={contract.address} value={index}>{contract.name} - {truncateString(contract.address, 6, 4)}</MenuItem>))
+                contracts && contracts.length > 0 ? (contracts.map((contract, index) => (
+                  <MenuItem key={contract.address} value={index}>
+                    <Box sx={{ display: 'flex', justifyContent: 'space-between', width: '100%', gap: 2 }}>
+                      <span>{contract.name}</span>
+                      <span>{truncateString(contract.address, 6, 4)}</span>
+                    </Box>
+                  </MenuItem>)
+                )) : (
+                  <MenuItem disabled value={'0'}>
+                    <span style={{ color: 'gray' }}>No contracts for {selectedAccount?.name} account</span>
+                  </MenuItem>)
               )}
-
             </Select>
-          </FormControl></Box>
+          </FormControl>
+        </Box>
       </Grid>
       <Grid item>
         <Box>
-          <Grid container spacing={2} direction="column" >
 
+          <Grid container spacing={2} direction="column" >
             <Grid item>
               <TableContainer>
                 <Table>
@@ -229,7 +235,6 @@ export default function Step3_Transfer() {
                     <TableRow>
                       <TableCell align="left" sx={{ width: "100%", borderBottom: 0, pl: 0, pt: 0 }}>SKU</TableCell>
                       <TableCell align="center" sx={{ width: "10ch", borderBottom: 0, pt: 0 }}>Amount</TableCell>
-                      {/* <TableCell align="center" sx={{ width: "1", border: 0, p: 0, m: 0, }}></TableCell> */}
                     </TableRow>
                   </TableHead>
                   <TableBody>

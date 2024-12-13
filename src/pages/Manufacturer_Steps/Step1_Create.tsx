@@ -8,6 +8,7 @@ import master from "../../contracts/Credbly_Master";
 import { ContractFunctionParameters, ContractExecuteTransaction } from "@hashgraph/sdk";
 import { AccountsContext } from "../../context/accountsProvider";
 import ContractsTable from "../../components/ContractsTable";
+import { logError, logTransactionLink } from "../../utils/general";
 
 export type Contract = {
   address: string;
@@ -20,10 +21,10 @@ export default function Step1_CreateContract() {
 
   const [uri, setUri] = useState("");
   const [name, setName] = useState("");
-  const [isWriting, setIsWriting] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const [flagCreated, setFlagCreated] = useState(0)
   
-  const { client } = useContext(AccountsContext);
+  const { client, updateBalances } = useContext(AccountsContext);
 
   function clearFields() {
     setUri("");
@@ -32,18 +33,18 @@ export default function Step1_CreateContract() {
   }
 
   const call = async (_name: string, _uri: string) => {
-    setIsWriting(true);
+    setIsLoading(true);
     try {
-
       //Create contract transaction
       const params = new ContractFunctionParameters().addString(_name).addString(_uri);
       const transaction = new ContractExecuteTransaction()
         .setContractId(master.id)
         .setGas(15_000_000)
-        .setFunction('createContract', params)
-
-      //Sign with the client operator private key to pay for the transaction and submit the query to a Hedera network
-      const txResponse = client && await transaction.execute(client);
+        .setFunction('createContract', params)        
+        
+        //Sign with the client operator private key to pay for the transaction and submit the query to a Hedera network
+        const txResponse = client && await transaction.execute(client);      
+        logTransactionLink('createContract', txResponse!.transactionId!); 
 
       //Request the receipt of the transaction
       const receipt = client && txResponse && await txResponse.getReceipt(client);
@@ -52,22 +53,18 @@ export default function Step1_CreateContract() {
       clearFields();
 
     } catch (error) {
-
-      console.error("Contract call failure", error);
-      toast.error("An error has occured\nCheck console log");
-
+      logError(error);
     } finally {
-      setIsWriting(false);
+      setIsLoading(false);
+      updateBalances!();
     }
   }
-
 
   return (
     <Stack
       direction="column"
       width="100%"
       component={Paper}
-      // sx={{ p: 2 }}
     >
       <Stack
         direction="row"
@@ -108,11 +105,11 @@ export default function Step1_CreateContract() {
 
             <Button
               onClick={() => call(name, uri)}
-              disabled={!client || isWriting}
+              disabled={!client || isLoading}
               variant="contained"
               color="primary"
               sx={{ width: "25ch", minHeight: "50px", maxHeight: "50px" }}>
-              {isWriting ? <CircularProgress size="1.5rem" color="inherit" /> : "Create contract"}
+              {isLoading ? <CircularProgress size="1.5rem" color="inherit" /> : "Create contract"}
             </Button>
 
           </Stack>

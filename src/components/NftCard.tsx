@@ -1,4 +1,4 @@
-import { Box, Card, CardContent, CardMedia, Grid, Typography } from "@mui/material";
+import { Box, Card, CardContent, CardMedia, Grid, Typography, Link } from "@mui/material";
 import { useEffect, useState } from "react";
 
 interface NftMetadata {
@@ -104,6 +104,7 @@ export default function NftCard(props: NftRowProps) {
           }}
         >
           {/* Image */}
+          <Link href={metadata?.image} target="_blank">
           <CardMedia
             component="img"
             sx={{
@@ -113,6 +114,7 @@ export default function NftCard(props: NftRowProps) {
             image={metadata?.image}
             alt={metadata?.name}
           />
+          </Link>
         </Box>
         <CardContent
           sx={{ pb: `8px !important`, pt: `8px !important` }}
@@ -135,17 +137,21 @@ export default function NftCard(props: NftRowProps) {
               }}
             >
               {/* Product's SKU */}
-              <Typography variant="overline" color="grey" lineHeight="normal">
-                {nft.sku}
-              </Typography>
+              <Link href={nft.uri} target="_blank">
+                <Typography variant="overline" color="grey" lineHeight="normal">
+                  {nft.sku}
+                </Typography>
+              </Link>
 
               {/* space */}
               <Box sx={{ flexGrow: 1 }} />
 
               {/* NFT Serial Number */}
-              <Typography variant="overline" color="grey" lineHeight="normal">
-                {`#${leadingZeros(nft.serialNumber.toString(), 5)}`}
-              </Typography>
+              <Link href={`https://hashscan.io/testnet/token/${nft.addr}/${nft.serialNumber}`} target="_blank">
+                <Typography variant="overline" color="grey" lineHeight="normal">
+                  {`#${leadingZeros(nft.serialNumber.toString(), 5)}`}
+                </Typography>
+              </Link>
             </Box>
 
             {/* Title */}

@@ -11,6 +11,8 @@ import toast from 'react-hot-toast';
 import { AccountsContext } from '../context/accountsProvider';
 import { AccountInfoQuery, ContractCallQuery, ContractExecuteTransaction, ContractFunctionParameters, TokenAssociateTransaction, TokenId } from '@hashgraph/sdk';
 import { NftType } from '../components/NftCard';
+import { logError, logTransactionLink } from '../utils/general';
+import { getAndSetNFTsRedeemedEvents } from '../utils/hedera';
 
 export default function FinalConsumer() {
 
@@ -27,40 +29,8 @@ export default function FinalConsumer() {
 
   useEffect(() => {
     clearFields();
-    setIsLoading(true);
-
-    let _nfts: NftType[] = [];
-
     // Get events from Holder of NFTs redeemed by the costumer
-    const getEvents = async () => {
-      const provider = new ethers.providers.JsonRpcProvider("https://testnet.hashio.io/api");
-      const holderContract = new ethers.Contract(holder.address, holder.abi, provider);
-      const holderBlock = (await provider.getTransactionReceipt(holder.transactionHash)).blockNumber
-      const nftsRedeemedFilter = address && holderContract.filters.NftsRedeemed(ethers.utils.getAddress(address));
-      const events: string | Array<Event> | undefined = nftsRedeemedFilter && await holderContract.queryFilter(nftsRedeemedFilter, holderBlock);
-
-      if (events && Array.isArray(events) && events.length > 0) {
-
-        events.map(e => {
-          const timestamp = (e.args![2] as BigNumber).toNumber();
-
-          // NFTs objects from the event
-          (e.args![1] as NftType[]).filter((nft) => nft.owner.toUpperCase() == address?.toUpperCase()).map((nft) => {
-            let _nft: NftType = { ...nft, timestamp: timestamp }
-            _nfts.push(_nft);
-          })
-        })
-        _nfts.length > 0 && setNfts(_nfts);
-        setIsLoading(false);
-      } else {
-        setIsLoading(false);
-      }
-    }
-    getEvents().catch(error => {
-      toast.error(`There was an error. Check log.`)
-      console.log(error)
-      setIsLoading(false)
-    });
+    address && getAndSetNFTsRedeemedEvents(setIsLoading, setNfts, address)
 
   }, [selectedAccount, flagNftsRedeemed]);
 
@@ -123,11 +93,14 @@ export default function FinalConsumer() {
           .freezeWith(client!);
 
         const associateTxSigned = await associateTx.sign(consumer.privateKey!);
-        const associateResponse = await associateTxSigned.execute(client!);
-        const associateReceipt = await associateResponse.getReceipt(client!);
+        const associateTxResponse = await associateTxSigned.execute(client!);
+        logTransactionLink('tokenAssociate', associateTxResponse!.transactionId!);
+
+        const associateReceipt = await associateTxResponse.getReceipt(client!);
 
         const associateStatus = associateReceipt.status.toString();
         console.log(`Association status of NFT Ids ${toAssociate}:`, associateStatus);
+        toast(`Tokens\n${toAssociate}\nwas associated to Costumer`)
 
       } else {
         console.log(`NFTs addresses already associated`)
@@ -142,6 +115,8 @@ export default function FinalConsumer() {
           params
         );
       const claimTxResponse = client && await claimNFTsTx.execute(client);
+      logTransactionLink('claimNFTs', claimTxResponse!.transactionId!);
+
       const claimReceipt = client && claimTxResponse && await claimTxResponse.getReceipt(client);
 
       // Wait 5 seconds to update node
@@ -152,9 +127,8 @@ export default function FinalConsumer() {
       setFlagNftsRedeemed(flagNftsRedeemed + 1)
       clearFields();
 
-    } catch (err) {
-      console.error("Contract call failure", err);
-      toast.error("An error has occured\nCheck console log");
+    } catch (error) {
+      logError(error);
     } finally {
       setIsCalling(false);
     }
@@ -190,7 +164,7 @@ export default function FinalConsumer() {
             {!client ? "Disconnected" : isCalling ? <CircularProgress size="1rem" color="inherit" /> : "Claim NFTs"}
           </Button>
         </Stack>
-        {isLoading ? <CircularProgress /> : nfts && nfts.length > 0 ? <NftsTable nfts={nfts} /> : <Typography color={'grey'} >No NFTs for the selected account</Typography>}
+        {isLoading ? <CircularProgress /> : nfts && nfts.length > 0 ? <NftsTable nfts={nfts} /> : <Typography color={'grey'} >No NFTs for {selectedAccount?.name} account</Typography>}
 
       </Stack>
     </Fragment>

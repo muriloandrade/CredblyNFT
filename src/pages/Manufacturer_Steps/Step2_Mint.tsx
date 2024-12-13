@@ -1,13 +1,13 @@
 import { Box, FormControl, Grid, InputLabel, Paper, Table, TableCell, TableBody, TableContainer, TableHead, TableRow, TextField, Stack, Button, CircularProgress, Skeleton } from '@mui/material';
 import MenuItem from '@mui/material/MenuItem';
 import Select, { SelectChangeEvent } from '@mui/material/Select';
-import { ChangeEvent, useContext, useEffect, useState } from 'react';
+import { ChangeEvent, useContext, useEffect, useMemo, useState } from 'react';
 import toast from "react-hot-toast";
-import { truncateString } from '../../utils/Utils';
+import { logError, logTransactionLink, truncateString } from '../../utils/general';
 import { ethers } from 'ethers';
-import master from "../../contracts/Credbly_Master";
 import { AccountsContext } from '../../context/accountsProvider';
 import { ContractCallQuery, ContractExecuteTransaction, ContractFunctionParameters, ContractId, Hbar } from '@hashgraph/sdk';
+import { getAndSetClientContractCreatedEvents } from '../../utils/hedera';
 
 type Contract = {
   name: string;
@@ -28,42 +28,28 @@ export default function Step2_Mint() {
   const [rows, setRows] = useState<Row[]>(new Array<Row>(3).fill({ sku: '', amount: '' }));
   const [isCalling, setIsCalling] = useState(false);
 
-  const { selectedAccount, client } = useContext(AccountsContext);
+  const { selectedAccount, client, updateBalances } = useContext(AccountsContext);
   const address = selectedAccount?.address;
   const [createdEvents, setCreatedEvents] = useState<ethers.Event[] | null>(null);
 
   useEffect(() => {
 
-    setIsLoading(true);
-
-    // Get created contracts events to fulfill the selector
-    const getEvents = async () => {
-      const provider = new ethers.providers.JsonRpcProvider("https://testnet.hashio.io/api");
-      const masterContract = new ethers.Contract(master.address, master.abi, provider);
-      const masterBlock = (await provider.getTransactionReceipt(master.transactionHash)).blockNumber
-
-      const clientContractCreatedFilter = address && masterContract.filters.ClientContractCreated(ethers.utils.getAddress(address));
-      // const rawLogs = await provider.getLogs({ ...clientContractCreatedFilter, fromBlock: 11800000 });
-      // const events = await masterContract.queryFilter('ClientContractCreated', 11800000);
-      const events = clientContractCreatedFilter && await masterContract.queryFilter(clientContractCreatedFilter, masterBlock);
-      events && setCreatedEvents(events)
-      setIsLoading(false);
-    }
-
-    getEvents().catch(error => {
-      toast.error(`An error has occured\nCheck console log`)
-      console.log(`Error retrieving events`, error)
-      setIsLoading(false)
-    });
+    // Get created contracts events to populate the selector
+    address && getAndSetClientContractCreatedEvents(setIsLoading, setCreatedEvents, address)
 
   }, [selectedAccount]);
 
+  // Memoize filtered events to avoid re-computation
+  const filteredEvents = useMemo(() => {
+    return createdEvents?.filter(event =>
+      event.args && event.args[0].toUpperCase() === address?.toUpperCase()
+    );
+  }, [createdEvents, address]);
+
   useEffect(() => {
 
-    if (createdEvents?.length == 0) toast(`No contracts found`)
-
     let _contracts: Contract[] = [];
-    createdEvents?.filter((event) => event.args && event.args[0].toUpperCase() == address?.toUpperCase()).map(async (event) => {
+    filteredEvents?.map(async (event) => {
       event && event.args && _contracts.push({ name: event.args[2], address: event.args[1] });
     });
 
@@ -80,7 +66,7 @@ export default function Step2_Mint() {
   }
 
   function handleSkuChange(e: ChangeEvent, index: number) {
-    var sku = (e.target as HTMLInputElement).value;
+    var sku = (e.target as HTMLInputElement).value.trim();
 
     var result = rows.map((r, i) => {
       if (i == index) return { ...r, sku: sku };
@@ -143,12 +129,14 @@ export default function Step2_Mint() {
         const mintTokens = new ContractExecuteTransaction()
           .setContractId(id)
           .setGas(8_000_000)
-          .setPayableAmount(new Hbar(1 + (14 * numNewTokens)))
+          .setPayableAmount(new Hbar(1 + (16 * numNewTokens)))
           .setFunction(
             'mintTokenBatch',
             params
           );
         const mintTxResponse = client && await mintTokens.execute(client);
+        logTransactionLink('mintTokenBatch', mintTxResponse!.transactionId!);
+
         const mintReceipt = client && mintTxResponse && await mintTxResponse.getReceipt(client);
 
         console.log("Tokens successfuly minted", mintReceipt)
@@ -158,11 +146,11 @@ export default function Step2_Mint() {
       else {
         throw new Error("no contract selected");
       }
-    } catch (err) {
-      console.error("Contract call failure", err);
-      toast.error("An error has occured\nCheck console log");
+    } catch (error) {
+      logError(error);
     } finally {
       setIsCalling(false);
+      updateBalances!();
     }
   }
 
@@ -179,19 +167,28 @@ export default function Step2_Mint() {
               id="contract-select"
               value={0 || contractSelected}
               onChange={(event) => handleSelectedContract(event)}
-              autoWidth
+              autoWidth={false}
+              fullWidth
               label="contracts"
               disabled={isLoading}
-              sx={{ bgcolor: "#181818" }}
               autoFocus
             >
               {isLoading ? (
-                <MenuItem disabled value={0}>
+                <MenuItem disabled value={'0'}>
                   <Skeleton animation="wave" />
                 </MenuItem>
               ) : (
-                contracts?.map((contract, index: number) => (
-                  <MenuItem key={contract.address} value={index}>{contract.name} - {truncateString(contract.address, 6, 4)}</MenuItem>))
+                contracts && contracts.length > 0 ? (contracts.map((contract, index) => (
+                  <MenuItem key={contract.address} value={index}>
+                    <Box sx={{ display: 'flex', justifyContent: 'space-between', width: '100%', gap: 2 }}>
+                      <span>{contract.name}</span>
+                      <span>{truncateString(contract.address, 6, 4)}</span>
+                    </Box>
+                  </MenuItem>)
+                )) : (
+                  <MenuItem disabled value={'0'}>
+                    <span style={{ color: 'gray' }}>No contracts for {selectedAccount?.name} account</span>
+                  </MenuItem>)
               )}
             </Select>
           </FormControl>

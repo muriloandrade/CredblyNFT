@@ -74,7 +74,7 @@ function CredblyAppBar() {
                     },
 
                   }}
-                  color="default" // Cor do ícone (cinza) no estado normal
+                  color="default"
                 >
                   <CloseIcon />
                 </IconButton>
@@ -89,21 +89,18 @@ function CredblyAppBar() {
                       color: 'gray',
                       backgroundColor: 'transparent',
                       '&:hover': {
-                        color: 'lightgreen',
+                        color: 'green',
                         backgroundColor: 'transparent',
                       },
   
                     }}
-                    color="default" // Cor do ícone (cinza) no estado normal
+                    color="default"
                   >
                     <RestartAlt />
                   </IconButton>
                 </Tooltip>
-
               )}
             </Box>
-
-
         </Toolbar>
       </Container>
     </AppBar>
