@@ -17,7 +17,6 @@ contract Credbly_Client is Ownable, Credbly_HTS {
     mapping(address => string)  public tokenAddrSku;
     mapping(address => address) public tokenNft;
     mapping(address => address) public nftToken;
-    mapping(address token => mapping(address possessor => int64 amount)) public tokenSupply;
 
     event Withdrawn(address indexed to, uint256 value, uint256 timestamp);
     event TokensConvertedToNFTs(
@@ -121,7 +120,6 @@ contract Credbly_Client is Ownable, Credbly_HTS {
                 skuTokenAddr[skus[i]] = tokenAddr;
             }
             _mintToken(tokenAddr, amounts[i], new bytes[](0));
-            tokenSupply[msg.sender][tokenAddr] += amounts[i];
         }
         payFee(mintPrice * totalAmount);
     }
