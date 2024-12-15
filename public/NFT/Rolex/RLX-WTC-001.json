@@ -1,0 +1,13 @@
+{
+    "name": "Tempus Aeterna",
+    "description": "The Tempus Aeterna is a timeless luxury watch that combines classic elegance with cutting-edge precision. Featuring a 18K gold case, sapphire crystal, and an intricate movement, this watch is designed to stand the test of time both in design and functionality.",
+    "image": "https://raw.githubusercontent.com/muriloandrade/CredblyNFT/refs/heads/master/public/NFTs/Rolex/tempus.jpeg",
+    "type": "image/jpeg",
+    "files": [
+        {
+            "uri": "https://raw.githubusercontent.com/muriloandrade/CredblyNFT/refs/heads/master/public/NFTs/Rolex/tempus.jpeg",
+            "is_default_file": true,
+            "type": "image/jpeg"
+        }
+    ]
+}

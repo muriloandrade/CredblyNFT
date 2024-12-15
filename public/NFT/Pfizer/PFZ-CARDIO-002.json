@@ -1,0 +1,13 @@
+{
+    "name": "Vasoclear",
+    "description": "Vasoclear is a powerful medication that helps to clear blockages in the blood vessels, improving circulation and reducing the risk of heart disease. It is often prescribed for patients with arterial plaque buildup.",
+    "image": "https://raw.githubusercontent.com/muriloandrade/CredblyNFT/refs/heads/master/public/NFTs/Pfizer/vasoclear.jpeg",
+    "type": "image/jpeg",
+    "files": [
+        {
+            "uri": "https://raw.githubusercontent.com/muriloandrade/CredblyNFT/refs/heads/master/public/NFTs/Pfizer/vasoclear.jpeg",
+            "is_default_file": true,
+            "type": "image/jpeg"
+        }
+    ]
+}

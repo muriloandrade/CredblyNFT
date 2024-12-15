@@ -1,0 +1,13 @@
+{
+    "name": "Chronos Vanguard",
+    "description": "The Chronos Vanguard is a modern masterpiece in watchmaking, with a carbon fiber case and a state-of-the-art chronograph movement. Its bold, sporty design makes it the perfect accessory for those who seek adventure without compromising on style.",
+    "image": "https://raw.githubusercontent.com/muriloandrade/CredblyNFT/refs/heads/master/public/NFTs/Rolex/chronos.jpeg",
+    "type": "image/jpeg",
+    "files": [
+        {
+            "uri": "https://raw.githubusercontent.com/muriloandrade/CredblyNFT/refs/heads/master/public/NFTs/Rolex/chronos.jpeg",
+            "is_default_file": true,
+            "type": "image/jpeg"
+        }
+    ]
+}

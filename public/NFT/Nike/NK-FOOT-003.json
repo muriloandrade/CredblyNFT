@@ -1,0 +1,13 @@
+{
+    "name": "Nike LunarEdge",
+    "description": "A stylish lifestyle sneaker inspired by space exploration. Features a metallic white and blue upper with a moon-textured midsole and holographic Nike swoosh.",
+    "image": "https://raw.githubusercontent.com/muriloandrade/CredblyNFT/refs/heads/master/public/NFTs/Nike/lunaredge.jpeg",
+    "type": "image/jpeg",
+    "files": [
+        {
+            "uri": "https://raw.githubusercontent.com/muriloandrade/CredblyNFT/refs/heads/master/public/NFTs/Nike/lunaredge.jpeg",
+            "is_default_file": true,
+            "type": "image/jpeg"
+        }
+    ]
+}

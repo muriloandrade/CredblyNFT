@@ -1,0 +1,13 @@
+{
+    "name": "Aurora Exemplar",
+    "description": "The Aurora Exemplar combines sophisticated technology with unparalleled craftsmanship. Featuring a platinum case and a self-winding movement, this elegant timepiece is designed for those who value precision, style, and luxury in every detail.",
+    "image": "https://raw.githubusercontent.com/muriloandrade/CredblyNFT/refs/heads/master/public/NFTs/Rolex/aurora.jpeg",
+    "type": "image/jpeg",
+    "files": [
+        {
+            "uri": "https://raw.githubusercontent.com/muriloandrade/CredblyNFT/refs/heads/master/public/NFTs/Rolex/aurora.jpeg",
+            "is_default_file": true,
+            "type": "image/jpeg"
+        }
+    ]
+}

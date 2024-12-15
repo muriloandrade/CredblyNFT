@@ -1,0 +1,13 @@
+{
+    "name": "L'Oréal Radiance",
+    "description": "A transformative conditioner that infuses your hair with unparalleled smoothness and radiance. Formulated with a potent blend of nourishing oils, this luxurious treatment effortlessly detangles even the most unruly locks, leaving your hair silky-soft and manageable. Experience the power of hydration as it quenches your hair’s thirst, reducing frizz and enhancing shine.",
+    "image": "https://raw.githubusercontent.com/muriloandrade/CredblyNFT/refs/heads/master/public/NFTs/Loreal/radiance.jpeg",
+    "type": "image/jpeg",
+    "files": [
+        {
+            "uri": "https://raw.githubusercontent.com/muriloandrade/CredblyNFT/refs/heads/master/public/NFTs/Loreal/radiance.jpeg",
+            "is_default_file": true,
+            "type": "image/jpeg"
+        }
+    ]
+}
