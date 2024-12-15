@@ -129,6 +129,19 @@ const contract = {
             "type": "event"
         },
         {
+            "inputs": [],
+            "name": "appUrl",
+            "outputs": [
+                {
+                    "internalType": "string",
+                    "name": "",
+                    "type": "string"
+                }
+            ],
+            "stateMutability": "view",
+            "type": "function"
+        },
+        {
             "inputs": [
                 {
                     "internalType": "string",
@@ -259,6 +272,19 @@ const contract = {
                 }
             ],
             "name": "setAccountKnowsClient",
+            "outputs": [],
+            "stateMutability": "nonpayable",
+            "type": "function"
+        },
+        {
+            "inputs": [
+                {
+                    "internalType": "string",
+                    "name": "_newAppUrl",
+                    "type": "string"
+                }
+            ],
+            "name": "setAppUrl",
             "outputs": [],
             "stateMutability": "nonpayable",
             "type": "function"
