@@ -1,11 +1,11 @@
 {
     "name": "Golden Highlands 18",
     "description": "Golden Highlands 18 is a refined single malt whisky, aged for 18 years in oak casks. With notes of honeyed citrus, rich vanilla, and a hint of smoky oak, it delivers a smooth and complex flavor profile, perfect for connoisseurs who appreciate elegance and depth.",
-    "image": "https://raw.githubusercontent.com/muriloandrade/CredblyNFT/refs/heads/master/public/NFTs/Chivas/golden.jpeg",
+    "image": "https://credbly-nft.vercel.app/NFT/Chivas/golden.jpeg",
     "type": "image/jpeg",
     "files": [
         {
-            "uri": "https://raw.githubusercontent.com/muriloandrade/CredblyNFT/refs/heads/master/public/NFTs/Chivas/golden.jpeg",
+            "uri": "https://credbly-nft.vercel.app/NFT/Chivas/golden.jpeg",
             "is_default_file": true,
             "type": "image/jpeg"
         }

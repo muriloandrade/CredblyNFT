@@ -1,11 +1,11 @@
 {
     "name": "L'Oréal Shine",
     "description": "A nourishing shampoo that restores shine and vitality to dull, damaged hair. Infused with botanical extracts, it revitalizes each strand, leaving your hair soft and lustrous.",
-    "image": "https://raw.githubusercontent.com/muriloandrade/CredblyNFT/refs/heads/master/public/NFTs/Loreal/shine.jpeg",
+    "image": "https://credbly-nft.vercel.app/NFT/Loreal/shine.jpeg",
     "type": "image/jpeg",
     "files": [
         {
-            "uri": "https://raw.githubusercontent.com/muriloandrade/CredblyNFT/refs/heads/master/public/NFTs/Loreal/shine.jpeg",
+            "uri": "https://credbly-nft.vercel.app/NFT/Loreal/shine.jpeg",
             "is_default_file": true,
             "type": "image/jpeg"
         }

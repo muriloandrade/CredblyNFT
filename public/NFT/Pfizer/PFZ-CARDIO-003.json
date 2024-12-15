@@ -1,11 +1,11 @@
 {
     "name": "Thrombocare",
     "description": "Thrombocare is an advanced anticoagulant designed to reduce the formation of dangerous blood clots, helping to prevent strokes and heart attacks in patients at risk of thrombotic events.",
-    "image": "https://raw.githubusercontent.com/muriloandrade/CredblyNFT/refs/heads/master/public/NFTs/Pfizer/thrombocare.jpeg",
+    "image": "https://credbly-nft.vercel.app/NFT/Pfizer/thrombocare.jpeg",
     "type": "image/jpeg",
     "files": [
         {
-            "uri": "https://raw.githubusercontent.com/muriloandrade/CredblyNFT/refs/heads/master/public/NFTs/Pfizer/thrombocare.jpeg",
+            "uri": "https://credbly-nft.vercel.app/NFT/Pfizer/thrombocare.jpeg",
             "is_default_file": true,
             "type": "image/jpeg"
         }

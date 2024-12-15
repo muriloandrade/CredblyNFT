@@ -1,11 +1,11 @@
 {
     "name": "Cardiovastra",
     "description": "Cardiovastra is a cutting-edge medication designed to reduce blood pressure and improve heart function. It works by relaxing the blood vessels and helping to prevent heart attacks and strokes.",
-    "image": "https://raw.githubusercontent.com/muriloandrade/CredblyNFT/refs/heads/master/public/NFTs/Pfizer/cardiovastra.jpeg",
+    "image": "https://credbly-nft.vercel.app/NFT/Pfizer/cardiovastra.jpeg",
     "type": "image/jpeg",
     "files": [
         {
-            "uri": "https://raw.githubusercontent.com/muriloandrade/CredblyNFT/refs/heads/master/public/NFTs/Pfizer/cardiovastra.jpeg",
+            "uri": "https://credbly-nft.vercel.app/NFT/Pfizer/cardiovastra.jpeg",
             "is_default_file": true,
             "type": "image/jpeg"
         }

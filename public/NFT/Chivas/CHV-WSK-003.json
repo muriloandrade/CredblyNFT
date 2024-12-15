@@ -1,11 +1,11 @@
 {
     "name": "Royal Oak 12",
     "description": "Royal Oak 12 is a distinguished whisky aged for 12 years, offering a perfect balance of sweetness and complexity. The smooth finish with hints of caramel, toffee, and oak makes it an ideal choice for those seeking a premium whisky experience.",
-    "image": "https://raw.githubusercontent.com/muriloandrade/CredblyNFT/refs/heads/master/public/NFTs/Chivas/royal.jpeg",
+    "image": "https://credbly-nft.vercel.app/NFT/Chivas/royal.jpeg",
     "type": "image/jpeg",
     "files": [
         {
-            "uri": "https://raw.githubusercontent.com/muriloandrade/CredblyNFT/refs/heads/master/public/NFTs/Chivas/royal.jpeg",
+            "uri": "https://credbly-nft.vercel.app/NFT/Chivas/royal.jpeg",
             "is_default_file": true,
             "type": "image/jpeg"
         }
