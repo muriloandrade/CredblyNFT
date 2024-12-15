@@ -17,8 +17,6 @@ import { getAndSetNFTsRedeemedEvents } from '../utils/hedera';
 export default function FinalConsumer() {
 
   const [isLoading, setIsLoading] = useState(true);
-  const [isCalling, setIsCalling] = useState(false);
-
   const [invoice, setInvoice] = useState<string>('');
   const [password, setPassword] = useState<string>('');
   const [nfts, setNfts] = useState<NftType[]>();
@@ -51,7 +49,7 @@ export default function FinalConsumer() {
     const passwordHash = web3.utils.soliditySha3({ type: "string", value: password });
 
     try {
-      setIsCalling(true);
+      setIsLoading(true);
 
       const id = holder.id;
       const params = new ContractFunctionParameters()
@@ -100,7 +98,6 @@ export default function FinalConsumer() {
 
         const associateStatus = associateReceipt.status.toString();
         console.log(`Association status of NFT Ids ${toAssociate}:`, associateStatus);
-        toast(`Tokens\n${toAssociate}\nwas associated to Costumer`)
 
       } else {
         console.log(`NFTs addresses already associated`)
@@ -130,7 +127,7 @@ export default function FinalConsumer() {
     } catch (error) {
       logError(error);
     } finally {
-      setIsCalling(false);
+      setIsLoading(false);
       updateBalances!();
     }
   }
@@ -158,11 +155,11 @@ export default function FinalConsumer() {
 
           <Button
             onClick={() => call()}
-            disabled={isLoading || isCalling || !client || !invoice || !password}
+            disabled={isLoading || isLoading || !client || !invoice || !password}
             variant="contained"
             color="primary"
             sx={{ width: "20ch", minHeight: "45px", maxHeight: "45px" }}>
-            {!client ? "Disconnected" : isCalling ? <CircularProgress size="1rem" color="inherit" /> : "Claim NFTs"}
+            {!client ? "Disconnected" : isLoading ? <CircularProgress size="1rem" color="inherit" /> : "Claim NFTs"}
           </Button>
         </Stack>
         {isLoading ? <CircularProgress /> : nfts && nfts.length > 0 ? <NftsTable nfts={nfts} /> : <Typography color={'grey'} >No NFTs for {selectedAccount?.name} account</Typography>}

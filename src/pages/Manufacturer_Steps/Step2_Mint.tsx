@@ -20,11 +20,9 @@ export default function Step2_Mint() {
   }
 
   const [isLoading, setIsLoading] = useState(true);
-
   const [contracts, setContracts] = useState<Contract[]>();
   const [contractSelected, setContractSelected] = useState<number>(0);
   const [rows, setRows] = useState<Row[]>(new Array<Row>(3).fill({ sku: '', amount: '' }));
-  const [isCalling, setIsCalling] = useState(false);
 
   const { selectedAccount, client, updateBalances } = useContext(AccountsContext);
   const address = selectedAccount?.address;
@@ -87,7 +85,7 @@ export default function Step2_Mint() {
     const amounts = rows.filter((r) => r.sku && r.amount).map((r) => r.amount);
 
     try {
-      setIsCalling(true);
+      setIsLoading(true);
       client?.setDefaultMaxTransactionFee(new Hbar(20))
       if (contracts && contractSelected != undefined) {
 
@@ -138,7 +136,7 @@ export default function Step2_Mint() {
     } catch (error) {
       logError(error);
     } finally {
-      setIsCalling(false);
+      setIsLoading(false);
       updateBalances!();
     }
   }
@@ -176,13 +174,13 @@ export default function Step2_Mint() {
                           <TableCell align="left" sx={{ p: 0, borderBottom: 0, bgcolor: "#181818" }} >
                             <TextField
                               value={row.sku}
-                              disabled={!client || isCalling || isLoading || !contracts || !contracts[contractSelected] || contractSelected == undefined}
+                              disabled={!client || isLoading || isLoading || !contracts || !contracts[contractSelected] || contractSelected == undefined}
                               onChange={(e) => handleSkuChange(e, index)} />
                           </TableCell>
                           <TableCell align="right" sx={{ p: 0, borderBottom: 0, bgcolor: "#181818" }}>
                             <TextField
                               value={row.amount}
-                              disabled={!client || isCalling || isLoading || !contracts || !contracts[contractSelected] || contractSelected == undefined}
+                              disabled={!client || isLoading || !contracts || !contracts[contractSelected] || contractSelected == undefined}
                               onChange={(e) => handleAmountChange(e, index)} />
                           </TableCell>
                         </TableRow>)}
@@ -195,11 +193,11 @@ export default function Step2_Mint() {
               <Stack>
                 <Button
                   onClick={() => call()}
-                  disabled={!client || isCalling || isLoading || !contracts || !contracts[contractSelected] || contractSelected == undefined}
+                  disabled={!client || isLoading || !contracts || !contracts[contractSelected] || contractSelected == undefined}
                   variant="contained"
                   color="secondary"
                   sx={{ width: "100%", minHeight: "45px", maxHeight: "45px" }}>
-                  {!client ? "Disconnected" : contractSelected == undefined ? "Select contract" : isCalling ? <CircularProgress size="1rem" color="inherit" /> : "Mint Tokens"}
+                  {!client ? "Disconnected" : contractSelected == undefined ? "Select contract" : isLoading ? <CircularProgress size="1rem" color="inherit" /> : "Mint Tokens"}
                 </Button>
               </Stack>
             </Grid>

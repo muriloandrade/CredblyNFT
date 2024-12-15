@@ -23,9 +23,7 @@ export default function Retailer() {
   }
 
   const [isLoading, setIsLoading] = useState(true);
-
   const [rows, setRows] = useState<Row[]>(new Array<Row>(4).fill({ contract: '', sku: '', amount: '', stock: '' }));
-  const [isCalling, setIsCalling] = useState(false);
   const [invoice, setInvoice] = useState<string>('');
   const [password, setPassword] = useState<string>('');
   const [createdEvents, setCreatedEvents] = useState<ethers.Event[] | null>(null);
@@ -85,7 +83,7 @@ export default function Retailer() {
 
     let success = true;
     try {
-      setIsCalling(true);
+      setIsLoading(true);
       for (let i = 0; i < contracts.length; i++) {
 
         let skus: string[] = [];
@@ -152,7 +150,7 @@ export default function Retailer() {
       logError(error);
       success = false;
     } finally {
-      setIsCalling(false);
+      setIsLoading(false);
       updateBalances!();
       if (success) {
         toast.success("Success. NFTs available to be claimed");
@@ -249,11 +247,11 @@ export default function Retailer() {
 
           <Button
             onClick={() => call()}
-            disabled={!client || isCalling || !invoice || !password || isLoading}
+            disabled={!client || isLoading || !invoice || !password || isLoading}
             variant="contained"
             color="primary"
             sx={{ width: "15ch", minHeight: "45px", maxHeight: "45px" }}>
-            {!client ? "Disconnected" : isCalling ? <CircularProgress size="1rem" color="inherit" /> : "Send NFTS"}
+            {!client ? "Disconnected" : isLoading ? <CircularProgress size="1rem" color="inherit" /> : "Send NFTS"}
           </Button>
         </Stack>
 

@@ -22,8 +22,6 @@ export default function Step3_Transfer() {
   }
 
   const [isLoading, setIsLoading] = useState(true);
-  const [isCalling, setIsCalling] = useState(false);
-
   const [contracts, setContracts] = useState<Contract[]>();
   const [contractSelected, setContractSelected] = useState<number>(0);
   const [rows, setRows] = useState<Row[]>(new Array<Row>(3).fill({ sku: '', stock: '', amount: '' }));
@@ -46,8 +44,6 @@ export default function Step3_Transfer() {
   }, [createdEvents, address]);
 
   useEffect(() => {
-
-    if (createdEvents?.length == 0) toast('No contracts found')
 
     let _contracts: Contract[] = [];
     filteredEvents?.map(async (event) => {
@@ -97,7 +93,7 @@ export default function Step3_Transfer() {
     const tokens: string[] = new Array<string>();
 
     try {
-      setIsCalling(true);
+      setIsLoading(true);
       if (selectedAccount && contracts && contractSelected != undefined) {
 
         const contractId = await ContractId.fromEvmAddress(0, 0, contracts[contractSelected].address).populateAccountNum(client!);
@@ -139,7 +135,6 @@ export default function Step3_Transfer() {
 
             const associateStatus = associateReceipt.status.toString();
             console.log(`Association status of token ${tokenId}:`, associateStatus);
-            toast(`Token ${tokenId} was associated to Retailer`)
           } else {
             console.log(`Token ${tokenId} already associated`)
           }
@@ -174,7 +169,7 @@ export default function Step3_Transfer() {
     } catch (error) {
       logError(error)
     } finally {
-      setIsCalling(false);
+      setIsLoading(false);
       updateBalances!();
     }
   }
@@ -212,13 +207,13 @@ export default function Step3_Transfer() {
                           <TableCell align="left" sx={{ p: 0, borderBottom: 0, bgcolor: "#181818" }}>
                             <TextField
                               value={row.sku}
-                              disabled={!client || isCalling || isLoading || !contracts || !contracts[contractSelected] || contractSelected == undefined}
+                              disabled={!client || isLoading || !contracts || !contracts[contractSelected] || contractSelected == undefined}
                               sx={{ width: "100%" }} onChange={(e) => handleSkuChange(e, index)}
                             />
                           </TableCell>
                           <TableCell align="center" sx={{ p: 0, borderBottom: 0, bgcolor: "#181818" }}>
                             <TextField value={row.amount}
-                              disabled={!client || isCalling || isLoading || !contracts || !contracts[contractSelected] || contractSelected == undefined || row.stock == "0"}
+                              disabled={!client || isLoading || !contracts || !contracts[contractSelected] || contractSelected == undefined || row.stock == "0"}
                               onChange={(e) => handleAmountChange(e, index)} />
                           </TableCell>
                         </TableRow>
@@ -231,11 +226,11 @@ export default function Step3_Transfer() {
             <Grid item>
               <Button
                 onClick={() => call()}
-                disabled={!client || isCalling || isLoading || !contracts || !contracts[contractSelected] || contractSelected == undefined}
+                disabled={!client || isLoading || !contracts || !contracts[contractSelected] || contractSelected == undefined}
                 variant="contained"
                 color="primary"
                 sx={{ width: "100%", minHeight: "40px", maxHeight: "40px" }}>
-                {!client ? "Disconnected" : contractSelected == undefined ? "Select contract" : isCalling ? <CircularProgress size="1rem" color="inherit" /> : "Transfer to Retailer"}
+                {!client ? "Disconnected" : contractSelected == undefined ? "Select contract" : isLoading ? <CircularProgress size="1rem" color="inherit" /> : "Transfer to Retailer"}
               </Button>
             </Grid>
           </Grid>
