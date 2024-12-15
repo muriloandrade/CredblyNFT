@@ -1,5 +1,4 @@
 import * as React from 'react';
-import { useContext } from 'react';
 import Box from '@mui/material/Box';
 import Stepper from '@mui/material/Stepper';
 import Step from '@mui/material/Step';
@@ -10,7 +9,6 @@ import Step1_Create from '../pages/Manufacturer_Steps/Step1_Create';
 import Step2_Mint from '../pages/Manufacturer_Steps/Step2_Mint';
 import Step3_Transfer from '../pages/Manufacturer_Steps/Step3_Transfer';
 import { IconButton, Stack } from '@mui/material';
-import { AccountsContext } from '../context/accountsProvider';
 
 const steps = [
   'Create new contract', 
@@ -21,12 +19,6 @@ const steps = [
 export default function MasterStepper() {
   const [activeStep, setActiveStep] = React.useState(0);
   const [skipped, setSkipped] = React.useState(new Set<number>());
-
-  const { accounts, setSelectedAccount } = useContext(AccountsContext);
-
-  React.useEffect(() => {
-    setSelectedAccount!(accounts![0])
-  }, [activeStep])
 
   const isStepSkipped = (step: number) => {
     return skipped.has(step);

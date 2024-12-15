@@ -253,7 +253,7 @@ export default function Retailer() {
             variant="contained"
             color="primary"
             sx={{ width: "15ch", minHeight: "45px", maxHeight: "45px" }}>
-            {!client ? "Disconnected" : isCalling ? <CircularProgress size="1rem" color="inherit" /> : "Send NFT"}
+            {!client ? "Disconnected" : isCalling ? <CircularProgress size="1rem" color="inherit" /> : "Send NFTS"}
           </Button>
         </Stack>
 
