@@ -11,6 +11,9 @@ contract Credbly_Master is Ownable {
     ICredbly_ClientFactory private clientFactory;
     ICredbly_Holder private holder;
 
+    //for testers
+    string public appUrl = "https://credbly-nft.vercel.app/";
+
     struct Client {
         uint256 contractsCount;
         mapping(uint256 id => address) contracts;
@@ -57,6 +60,10 @@ contract Credbly_Master is Ownable {
 
     function setHolder(address _holderAddr) external onlyOwner {
         holder = ICredbly_Holder(_holderAddr);
+    }
+
+    function setAppUrl(string memory _newAppUrl) external onlyOwner {
+        appUrl = _newAppUrl;
     }
 
     function receiveFee() external payable onlyAllowed {}
@@ -119,6 +126,7 @@ contract Credbly_Master is Ownable {
     }
 
     function uriExists(string memory _uri) private view returns (uint256) {
+        if (sameStrings(appUrl, substring(_uri, 0, strlen(appUrl)))) return 0;
         bool found = false;
         uint256 i;
         for (i = 0; i < uris.length && !found; i++) {
@@ -163,6 +171,18 @@ contract Credbly_Master is Ownable {
 
     function getKnownClients() external view returns ( address[] memory ) {
         return accountKnowsClients[msg.sender];
+    }
+
+    function substring(string memory str, uint start, uint length) internal pure returns (string memory) {
+        bytes memory strBytes = bytes(str);
+        require(start + length <= strBytes.length, "Clt: string out of bounds");        
+        bytes memory result = new bytes(length);
+        
+        for (uint i = 0; i < length; i++) {
+            result[i] = strBytes[start + i];
+        }
+        
+        return string(result);
     }
 
     /**
