@@ -118,7 +118,7 @@ The source codes of smart contracts, written in Solidity, are located in the `/s
 
 ## Frontend - Step by Step
 
-Go to live version [CredblyNFT](https://credbly-nft.vercel.app/)
+Go to live version <a href="https://credbly-nft.vercel.app/" target="_blank">CredblyNFT</a>
 
 For testing purposes, the application contains fictional content for 5 different brands (exceptions for the unique URI rule). 
 Choose one for Brand A and another for Brand B accounts, using the URI and SKUs according to the table below. Make sure to type them exactly as shown, as the fields are case-sensitive.
