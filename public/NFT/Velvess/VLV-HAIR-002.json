@@ -1,11 +1,11 @@
 {
-    "name": "L'Oréal Radiance",
+    "name": "Velvess - Radiance",
     "description": "A transformative conditioner that infuses your hair with unparalleled smoothness and radiance. Formulated with a potent blend of nourishing oils, this luxurious treatment effortlessly detangles even the most unruly locks, leaving your hair silky-soft and manageable. Experience the power of hydration as it quenches your hair’s thirst, reducing frizz and enhancing shine.",
-    "image": "https://credbly-nft.vercel.app/NFT/Loreal/radiance.jpeg",
+    "image": "https://credbly-nft.vercel.app/NFT/Velvess/radiance.jpeg",
     "type": "image/jpeg",
     "files": [
         {
-            "uri": "https://credbly-nft.vercel.app/NFT/Loreal/radiance.jpeg",
+            "uri": "https://credbly-nft.vercel.app/NFT/Velvess/radiance.jpeg",
             "is_default_file": true,
             "type": "image/jpeg"
         }

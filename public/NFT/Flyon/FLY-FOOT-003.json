@@ -1,11 +1,11 @@
 {
-    "name": "Nike LunarEdge",
+    "name": "Flyon - LunarEdge",
     "description": "A stylish lifestyle sneaker inspired by space exploration. Features a metallic white and blue upper with a moon-textured midsole and holographic logo.",
-    "image": "https://credbly-nft.vercel.app/NFT/Nike/lunaredge.jpeg",
+    "image": "https://credbly-nft.vercel.app/NFT/Flyon/lunaredge.jpeg",
     "type": "image/jpeg",
     "files": [
         {
-            "uri": "https://credbly-nft.vercel.app/NFT/Nike/lunaredge.jpeg",
+            "uri": "https://credbly-nft.vercel.app/NFT/Flyon/lunaredge.jpeg",
             "is_default_file": true,
             "type": "image/jpeg"
         }

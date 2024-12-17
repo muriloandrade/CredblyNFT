@@ -1,11 +1,11 @@
 {
-    "name": "L'Oréal Volume Boost",
+    "name": "Velvess - Volume Boost",
     "description": "A lightweight mousse designed to provide long-lasting volume and lift without weighing down your hair. Perfect for adding body and fullness to fine or limp hair.",
-    "image": "https://credbly-nft.vercel.app/NFT/Loreal/volumeboost.jpeg",
+    "image": "https://credbly-nft.vercel.app/NFT/Velvess/volumeboost.jpeg",
     "type": "image/jpeg",
     "files": [
         {
-            "uri": "https://credbly-nft.vercel.app/NFT/Loreal/volumeboost.jpeg",
+            "uri": "https://credbly-nft.vercel.app/NFT/Velvess/volumeboost.jpeg",
             "is_default_file": true,
             "type": "image/jpeg"
         }

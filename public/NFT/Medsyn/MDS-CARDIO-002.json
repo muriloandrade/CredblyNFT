@@ -1,11 +1,11 @@
 {
-    "name": "Vasoclear",
+    "name": "Medsyn - Vasoclear",
     "description": "Vasoclear is a powerful medication that helps to clear blockages in the blood vessels, improving circulation and reducing the risk of heart disease. It is often prescribed for patients with arterial plaque buildup.",
-    "image": "https://credbly-nft.vercel.app/NFT/Pfizer/vasoclear.jpeg",
+    "image": "https://credbly-nft.vercel.app/NFT/Medsyn/vasoclear.jpeg",
     "type": "image/jpeg",
     "files": [
         {
-            "uri": "https://credbly-nft.vercel.app/NFT/Pfizer/vasoclear.jpeg",
+            "uri": "https://credbly-nft.vercel.app/NFT/Medsyn/vasoclear.jpeg",
             "is_default_file": true,
             "type": "image/jpeg"
         }

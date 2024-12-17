@@ -120,31 +120,31 @@ The source codes of smart contracts, written in Solidity, are located in the `/s
 
 Go to live version <a href="https://credbly-nft.vercel.app/" target="_blank">CredblyNFT</a>
 
-For testing purposes, the application contains fictional content for 5 different brands (exceptions for the unique URI rule). 
-Choose one for Brand A and another for Brand B accounts, using the URI and SKUs according to the table below. Make sure to type them exactly as shown, as the fields are case-sensitive.
+For testing purposes, the application contains fictional content for 5 fictitious brands (exceptions for the unique URI rule to allow any number of testers). 
+Choose one for BrandA account and another for BrandB, using the URI and SKUs according to the table below. Make sure to type them exactly as shown, as the fields are case-sensitive.
 ```
 +---------+----------------------+-----------------------------------------------------------+------------------+
 |  BRAND  |    SUGGESTED NAME    |                            URI                            |       SKU        |
 +---------+----------------------+-----------------------------------------------------------+------------------+
-| Chivas  | Chivas - whiskys     | https://credbly-nft.vercel.app/NFT/Chivas/{sku}.json      | CHV-WSK-001      |
-|         |                      |                                                           | CHV-WSK-002      |
-|         |                      |                                                           | CHV-WSK-003      |
+| Flyon   | Flyon - Footwear     | https://credbly-nft.vercel.app/NFT/Flyon/{sku}.json       | FLY-FOOT-001     |
+|         |                      |                                                           | FLY-FOOT-002     |
+|         |                      |                                                           | FLY-FOOT-003     |
 +---------+----------------------+-----------------------------------------------------------+------------------+
-| L'oreal | Loreal - haircare    | https://credbly-nft.vercel.app/NFT/Loreal/{sku}.json      | LRL-HAIR-001     |
-|         |                      |                                                           | LRL-HAIR-002     |
-|         |                      |                                                           | LRL-HAIR-003     |
+| Highoak | Highoak - whiskys    | https://credbly-nft.vercel.app/NFT/Highoak/{sku}.json     | HOK-WSK-001      |
+|         |                      |                                                           | HOK-WSK-002      |
+|         |                      |                                                           | HOK-WSK-003      |
 +---------+----------------------+-----------------------------------------------------------+------------------+
-| Nike    | Nike - Footwear      | https://credbly-nft.vercel.app/NFT/Nike/{sku}.json        | NK-FOOT-001      |
-|         |                      |                                                           | NK-FOOT-002      |
-|         |                      |                                                           | NK-FOOT-003      |
+| Lucent  | Lucent - watches     | https://credbly-nft.vercel.app/NFT/Lucent/{sku}.json      | LCT-WTC-001      |
+|         |                      |                                                           | LCT-WTC-002      |
+|         |                      |                                                           | LCT-WTC-003      |
 +---------+----------------------+-----------------------------------------------------------+------------------+
-| Pfizer  | Pfizer - cardio      | https://credbly-nft.vercel.app/NFT/Pfizer/{sku}.json      | PFZ-CARDIO-001   |
-|         |                      |                                                           | PFZ-CARDIO-002   |
-|         |                      |                                                           | PFZ-CARDIO-003   |
+| Medsyn  | Medsyn - cardio      | https://credbly-nft.vercel.app/NFT/Medsyn/{sku}.json      | MDS-CARDIO-001   |
+|         |                      |                                                           | MDS-CARDIO-002   |
+|         |                      |                                                           | MDS-CARDIO-003   |
 +---------+----------------------+-----------------------------------------------------------+------------------+
-| Rolex   | Rolex - wristwatches | https://credbly-nft.vercel.app/NFT/Rolex/{sku}.json       | RLX-WTC-001      |
-|         |                      |                                                           | RLX-WTC-002      |
-|         |                      |                                                           | RLX-WTC-003      |
+| Velvess | Velvess- haircare    | https://credbly-nft.vercel.app/NFT/Velvess/{sku}.json     | VLV-HAIR-001     |
+|         |                      |                                                           | VLV-HAIR-002     |
+|         |                      |                                                           | VLV-HAIR-003     |
 +---------+----------------------+-----------------------------------------------------------+------------------+
 ```
 

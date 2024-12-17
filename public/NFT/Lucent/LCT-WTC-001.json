@@ -1,11 +1,11 @@
 {
-    "name": "Tempus Aeterna",
+    "name": "Lucent - Tempus Aeterna",
     "description": "The Tempus Aeterna is a timeless luxury watch that combines classic elegance with cutting-edge precision. Featuring a 18K gold case, sapphire crystal, and an intricate movement, this watch is designed to stand the test of time both in design and functionality.",
-    "image": "https://credbly-nft.vercel.app/NFT/Rolex/tempus.jpeg",
+    "image": "https://credbly-nft.vercel.app/NFT/Lucent/tempus.jpeg",
     "type": "image/jpeg",
     "files": [
         {
-            "uri": "https://credbly-nft.vercel.app/NFT/Rolex/tempus.jpeg",
+            "uri": "https://credbly-nft.vercel.app/NFT/Lucent/tempus.jpeg",
             "is_default_file": true,
             "type": "image/jpeg"
         }

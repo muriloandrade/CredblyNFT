@@ -1,0 +1,13 @@
+{
+    "name": "Highoak - Royal 12",
+    "description": "Royal 12 is a distinguished whisky aged for 12 years, offering a perfect balance of sweetness and complexity. The smooth finish with hints of caramel, toffee, and oak makes it an ideal choice for those seeking a premium whisky experience.",
+    "image": "https://credbly-nft.vercel.app/NFT/Highoak/royal.jpeg",
+    "type": "image/jpeg",
+    "files": [
+        {
+            "uri": "https://credbly-nft.vercel.app/NFT/Highoak/royal.jpeg",
+            "is_default_file": true,
+            "type": "image/jpeg"
+        }
+    ]
+}

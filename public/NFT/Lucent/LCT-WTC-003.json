@@ -1,11 +1,11 @@
 {
-    "name": "Aurora Exemplar",
+    "name": "Lucent - Aurora Exemplar",
     "description": "The Aurora Exemplar combines sophisticated technology with unparalleled craftsmanship. Featuring a platinum case and a self-winding movement, this elegant timepiece is designed for those who value precision, style, and luxury in every detail.",
-    "image": "https://credbly-nft.vercel.app/NFT/Rolex/aurora.jpeg",
+    "image": "https://credbly-nft.vercel.app/NFT/Lucent/aurora.jpeg",
     "type": "image/jpeg",
     "files": [
         {
-            "uri": "https://credbly-nft.vercel.app/NFT/Rolex/aurora.jpeg",
+            "uri": "https://credbly-nft.vercel.app/NFT/Lucent/aurora.jpeg",
             "is_default_file": true,
             "type": "image/jpeg"
         }

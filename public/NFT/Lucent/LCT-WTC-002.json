@@ -1,11 +1,11 @@
 {
-    "name": "Chronos Vanguard",
+    "name": "Lucent - Chronos Vanguard",
     "description": "The Chronos Vanguard is a modern masterpiece in watchmaking, with a carbon fiber case and a state-of-the-art chronograph movement. Its bold, sporty design makes it the perfect accessory for those who seek adventure without compromising on style.",
-    "image": "https://credbly-nft.vercel.app/NFT/Rolex/chronos.jpeg",
+    "image": "https://credbly-nft.vercel.app/NFT/Lucent/chronos.jpeg",
     "type": "image/jpeg",
     "files": [
         {
-            "uri": "https://credbly-nft.vercel.app/NFT/Rolex/chronos.jpeg",
+            "uri": "https://credbly-nft.vercel.app/NFT/Lucent/chronos.jpeg",
             "is_default_file": true,
             "type": "image/jpeg"
         }

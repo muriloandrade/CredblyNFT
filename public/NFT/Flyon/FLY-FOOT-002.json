@@ -1,11 +1,11 @@
 {
-    "name": "Nike HyperTrack",
+    "name": "Flyon - HyperTrack",
     "description": "A high-performance trail shoe built for rugged terrain. Highlights include an all-black upper with reflective accents, reinforced overlays, and a rugged sole with deep treads for maximum grip.",
-    "image": "https://credbly-nft.vercel.app/NFT/Nike/hypertrack.jpeg",
+    "image": "https://credbly-nft.vercel.app/NFT/Flyon/hypertrack.jpeg",
     "type": "image/jpeg",
     "files": [
         {
-            "uri": "https://credbly-nft.vercel.app/NFT/Nike/hypertrack.jpeg",
+            "uri": "https://credbly-nft.vercel.app/NFT/Flyon/hypertrack.jpeg",
             "is_default_file": true,
             "type": "image/jpeg"
         }

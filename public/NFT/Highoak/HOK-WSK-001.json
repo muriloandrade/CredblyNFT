@@ -1,0 +1,13 @@
+{
+    "name": "Highoak - Golden Highlands",
+    "description": "Golden Highlands is a refined single malt whisky, aged for 18 years in oak casks. With notes of honeyed citrus, rich vanilla, and a hint of smoky oak, it delivers a smooth and complex flavor profile, perfect for connoisseurs who appreciate elegance and depth.",
+    "image": "https://credbly-nft.vercel.app/NFT/Highoak/golden.jpeg",
+    "type": "image/jpeg",
+    "files": [
+        {
+            "uri": "https://credbly-nft.vercel.app/NFT/Highoak/golden.jpeg",
+            "is_default_file": true,
+            "type": "image/jpeg"
+        }
+    ]
+}

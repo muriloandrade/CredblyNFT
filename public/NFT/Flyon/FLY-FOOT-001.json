@@ -1,11 +1,11 @@
 {
-    "name": "Nike AeroFlow",
+    "name": "Flyon - AeroFlow",
     "description": "A cutting-edge running sneaker, meticulously crafted for those who demand the pinnacle of speed and comfort. Its sleek, aerodynamic silhouette exudes a sense of swiftness, while the striking silver and neon green color scheme commands attention. The futuristic sole, characterized by its visible air cushioning, not only enhances shock absorption but also contributes to a dynamic and responsive ride. Every detail of this sneaker, from its lightweight, breathable materials to its ergonomic design, has been thoughtfully considered to optimize performance and elevate the running experience.",
-    "image": "https://credbly-nft.vercel.app/NFT/Nike/aeroflow.jpeg",
+    "image": "https://credbly-nft.vercel.app/NFT/Flyon/aeroflow.jpeg",
     "type": "image/jpeg",
     "files": [
         {
-            "uri": "https://credbly-nft.vercel.app/NFT/Nike/aeroflow.jpeg",
+            "uri": "https://credbly-nft.vercel.app/NFT/Flyon/aeroflow.jpeg",
             "is_default_file": true,
             "type": "image/jpeg"
         }

@@ -1,11 +1,11 @@
 {
-    "name": "Silvercrest Reserve",
+    "name": "Highoak - Silvercrest Reserve",
     "description": "Silvercrest Reserve is an exquisite blended whisky, carefully crafted with a selection of the finest aged malts. Its rich, smooth taste is complemented by notes of dried fruits, chocolate, and a touch of spice, making it a luxurious choice for any occasion.",
-    "image": "https://credbly-nft.vercel.app/NFT/Chivas/silvercrest.jpeg",
+    "image": "https://credbly-nft.vercel.app/NFT/Highoak/silvercrest.jpeg",
     "type": "image/jpeg",
     "files": [
         {
-            "uri": "https://credbly-nft.vercel.app/NFT/Chivas/silvercrest.jpeg",
+            "uri": "https://credbly-nft.vercel.app/NFT/Highoak/silvercrest.jpeg",
             "is_default_file": true,
             "type": "image/jpeg"
         }

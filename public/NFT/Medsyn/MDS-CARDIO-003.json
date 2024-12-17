@@ -1,11 +1,11 @@
 {
-    "name": "Thrombocare",
+    "name": "Medsyn - Thrombocare",
     "description": "Thrombocare is an advanced anticoagulant designed to reduce the formation of dangerous blood clots, helping to prevent strokes and heart attacks in patients at risk of thrombotic events.",
-    "image": "https://credbly-nft.vercel.app/NFT/Pfizer/thrombocare.jpeg",
+    "image": "https://credbly-nft.vercel.app/NFT/Medsyn/thrombocare.jpeg",
     "type": "image/jpeg",
     "files": [
         {
-            "uri": "https://credbly-nft.vercel.app/NFT/Pfizer/thrombocare.jpeg",
+            "uri": "https://credbly-nft.vercel.app/NFT/Medsyn/thrombocare.jpeg",
             "is_default_file": true,
             "type": "image/jpeg"
         }
