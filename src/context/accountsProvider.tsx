@@ -36,33 +36,21 @@ function AccountsProvider(props: any) {
 	const prevAccounts = useRef(accounts);
 
 	async function generateAccountsFcn(userAccountId: string, userPrivateKey: string) {
-		
-		let accts;
-		accts = localStorage.getItem('accounts')
-		if (!accts) {
-			
-			const client = Client.forTestnet().setOperator(userAccountId, userPrivateKey);
 
-			accts = new Array<AccountType>();
-			accts.push({
-				name: "Brand A",
-				icon: "factory"
-			})
-			accts.push({
-				name: "Brand B",
-				icon: "factory"
-			})
-			accts.push({
-				name: "Retailer",
-				icon: "storefront"
-			})
-			accts.push({
-				name: "Customer",
-				icon: "person"
-			})
+		try {
+			let accts;
+			accts = localStorage.getItem('accounts');
+			if (!accts) {
 
+				const client = Client.forTestnet().setOperator(userAccountId, userPrivateKey);
 
-			try {
+				accts = [
+					{ name: "Brand A", icon: "factory" },
+					{ name: "Brand B", icon: "factory" },
+					{ name: "Retailer", icon: "storefront" },
+					{ name: "Customer", icon: "person" }
+				] as AccountType[];
+
 				setIsLoading(true)
 				let index = 0;
 				for (const acct of accts) {
@@ -70,7 +58,7 @@ function AccountsProvider(props: any) {
 					console.log(`Creating ${acct.name} account...`);
 
 					//120ℏ for Manufacturers, 20ℏ for Retailer and Customer
-					const initBalance = index++ > 1 ? 20 : 120; 
+					const initBalance = index++ > 1 ? 20 : 120;
 
 					const pvKey = PrivateKey.generateECDSA();
 
@@ -106,24 +94,38 @@ function AccountsProvider(props: any) {
 						throw new Error(`Transaction failed: ${status}`)
 					}
 				}
-			} catch (error) {
-				logError(error);
-			} finally {
-				setIsLoading(false);
+
+				// Final validation
+				const allValid = accts.every(acct =>
+					acct.id !== undefined &&
+					acct.address !== undefined &&
+					acct.privateKey !== undefined &&
+					acct.privateKeyECDSA !== undefined &&
+					acct.balance !== undefined
+				);
+				if (allValid) {
+					localStorage.setItem('accounts', JSON.stringify(accts));
+				} else {
+					throw new Error("Some accounts are missing required properties.");
+				}				
 			}
-			localStorage.setItem('accounts', JSON.stringify(accts));
+			else {
+				console.log('getting accounts from cache...')
+				accts = JSON.parse(accts);
+				// recreate AccountId and PrivateKey objects
+				accts = accts.map((acc: AccountType) => {
+					return { ...acc, id: new AccountId(acc.id as AccountId), privateKey: PrivateKey.fromStringECDSA(acc.privateKeyECDSA!) }
+				})
+			}
+			setAccounts(accts)
+			setSelectedAccount(accts[0])
+			console.log('done')
+
+		} catch (error) {
+			logError(error);
+		} finally {
+			setIsLoading(false);
 		}
-		else {
-			console.log('getting accounts from cache...')
-			accts = JSON.parse(accts);
-			// recreate AccountId and PrivateKey objects
-			accts = accts.map((acc: AccountType) => {
-				return { ...acc, id: new AccountId(acc.id as AccountId), privateKey: PrivateKey.fromStringECDSA(acc.privateKeyECDSA!) }
-			})
-		}
-		setAccounts(accts)
-		setSelectedAccount(accts[0])
-		console.log('done')
 	}
 
 	useEffect(() => {
