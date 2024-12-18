@@ -88,7 +88,7 @@ export default function Step1_CreateContract() {
               id="contract_uri"
               label="Contract URI"
               onChange={(e) =>
-                setUri(e.target.value)}
+                setUri((e.target.value as string).trim())}
               placeholder="https://your_domain.com/{sku}.json"
               variant="outlined"
               sx={{ width: '50ch', bgcolor: "#181818" }}
